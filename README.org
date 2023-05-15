@@ -1,0 +1,8 @@
+* OpenGL Exercises.
+  Basic Opengl 2D Stuff.
+
+** Simple window
+   Opens simple OpenGL window.
+
+** Simple Game
+   A square that can be moved by arrow keys.
