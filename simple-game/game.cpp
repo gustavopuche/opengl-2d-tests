@@ -1,23 +1,73 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include<iostream>
+#include<array>
 
 using namespace std;
 
 // Global variables to move the object.
 float xr = 0, yr = 0;
 
+array<array<int,10>,10> gameMap = {{
+  {1,1,1,1,1,1,1,1,1,1},
+  {1,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,1,1,1,1,1},
+  {1,0,0,0,0,1,1,1,1,1},
+  {1,0,0,0,0,1,1,1,1,1},
+  {1,0,0,0,0,1,1,1,1,1},
+  {1,1,1,1,1,1,1,1,1,1}
+  }};
+
+void paintBlock(void)
+{
+  glBegin(GL_QUADS);
+  glColor3f(1 ,0.5 ,0);
+  glVertex2f(0,0);
+  glVertex2f(10,0);
+  glVertex2f(10,10);
+  glVertex2f(0,10);
+  glEnd();
+
+}
+
+void paintMap(void)
+{
+  for (int y=0; y < 10; y++)
+    for (int x=0; x < 10; x++)
+    {
+      if (gameMap[x][9-y] == 1)
+      {
+	glPushMatrix();
+	glTranslatef(10*x,10*y,0);
+	paintBlock();
+	glPopMatrix();
+      }
+    }
+}
+
+void paintSprite(void)
+{
+  glBegin(GL_QUADS);
+  glColor3f(1 ,1 ,0);
+  glVertex2f(0+xr,0+yr);
+  glVertex2f(40+xr,0+yr);
+  glVertex2f(40+xr,40+yr);
+  glVertex2f(0+xr,40+yr);
+  glEnd();
+}
+
 void display(void)
 {
   glClear(GL_COLOR_BUFFER_BIT);
-  glColor3f(0 ,0 ,1);
+  // glMatrixMode(GL_MODELVIEW);      // To operate on Model-View matrix
+  // glLoadIdentity();                // Reset the model-view matrix
 
-  glBegin(GL_QUADS);
-  glVertex2f(200+xr,100+yr);
-  glVertex2f(300+xr,100+yr);
-  glVertex2f(300+xr,200+yr);
-  glVertex2f(200+xr,200+yr);
-  glEnd();
+  paintSprite();
+
+  paintMap();
 
   glFlush();
   glutPostRedisplay();
@@ -56,12 +106,12 @@ int main(int argc, char** argv)
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
   glutInitWindowSize(400, 400);
-  glutInitWindowPosition(600, 50);
+  glutInitWindowPosition(50, 50);
   glutCreateWindow("sIMPle gAMe!");
 
   glutDisplayFunc(display); // display callback function.
 
-  glClearColor(0,1,0,0);
+  glClearColor(0,0,0,0);
   gluOrtho2D(0.0,400,0.0,400);
   glutSpecialFunc(specialKey); // kayboard callback function.
 
