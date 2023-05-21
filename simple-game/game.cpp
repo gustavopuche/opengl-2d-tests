@@ -1,3 +1,4 @@
+#include "lodepng.h"
 #include <GL/glut.h>
 #include <stdlib.h>
 #include<iostream>
@@ -61,6 +62,29 @@ array<array<int,MAP_SIDE>,MAP_SIDE> gameMap = {{
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
   }};
 
+std::vector<unsigned char> img;
+unsigned w, h;
+
+void decodeOneStep(const char* filename)
+{
+    std::vector<unsigned char> image;
+    unsigned width, height;
+
+    //decode
+    unsigned error = lodepng::decode(image, width, height, filename);
+    cout << "w: " << width << " " << "h: " << height << endl;
+
+    //if there's an error, display it
+    if (error) std::cout << "decoder error " << error << ": " <<       lodepng_error_text(error) << std::endl;
+    else
+    {
+        img = image;
+        w = width;
+        h = height;
+        cout << "Success" << endl;
+    }
+}
+
 void paintBlock(void)
 {
   glBegin(GL_QUADS);
@@ -101,12 +125,16 @@ bool getWallAt(int x, int y)
 
 void paintSprite(void)
 {
+  glEnable(GL_TEXTURE_2D);
+  glTexImage2D(GL_TEXTURE_2D, 0, 4, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, &img[0]);
+
   glBegin(GL_QUADS);
   glColor3f(1 ,1 ,0);
-  glVertex2f(0+xr,0+yr);
-  glVertex2f(SPRITE_SIDE+xr,0+yr);
-  glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-  glVertex2f(0+xr,SPRITE_SIDE+yr);
+  glTexCoord2f(0, 0); glVertex2f(0+xr,0+yr);
+  glTexCoord2f(1, 0); glVertex2f(SPRITE_SIDE+xr,0+yr);
+  glTexCoord2f(1, 1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+  glTexCoord2f(0, 1); glVertex2f(0+xr,SPRITE_SIDE+yr);
+  glDisable(GL_TEXTURE_2D);
   glEnd();
 }
 
@@ -272,12 +300,14 @@ int main(int argc, char** argv)
 {
   cout << "Use arrow keys..." << endl;
 
+
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
   glutInitWindowSize(400, 400);
   glutInitWindowPosition(50, 50);
   glutCreateWindow("sIMPle gAMe!");
 
+  decodeOneStep("pacmat-1.png");
   glutDisplayFunc(display); // display callback function.
 
   glClearColor(0,0,0,0);

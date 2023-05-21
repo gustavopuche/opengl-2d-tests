@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # find_package(Threads REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
-add_executable( game game.cpp )
+add_executable( game game.cpp lodepng.cpp)
 # target_link_libraries(game Threads::Threads)
 include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} )
 
