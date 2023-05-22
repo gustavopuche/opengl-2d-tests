@@ -14,6 +14,8 @@ int sprBlckX,sprBlckY,sprOffX,sprOffY;
 enum class SpriteDirection {LEFT,RIGHT,UP,DOWN};
 enum class SpriteMove {HORIZONTAL,VERTICAL};
 
+SpriteDirection currSprtDir = SpriteDirection::LEFT;
+
 const int MAP_SIDE = 40;
 const int BLOCK_SIDE = 10;
 const int SPRITE_SIDE = 40;
@@ -64,25 +66,36 @@ array<array<int,MAP_SIDE>,MAP_SIDE> gameMap = {{
 
 std::vector<unsigned char> img;
 unsigned w, h;
+GLuint texture[0];
 
 void decodeOneStep(const char* filename)
 {
-    std::vector<unsigned char> image;
-    unsigned width, height;
+  std::vector<unsigned char> image;
+  unsigned width, height;
 
-    //decode
-    unsigned error = lodepng::decode(image, width, height, filename);
-    cout << "w: " << width << " " << "h: " << height << endl;
+  glBindTexture(GL_TEXTURE_2D, texture[0]);
+  //decode
+  unsigned error = lodepng::decode(image, width, height, filename);
+  cout << "w: " << width << " " << "h: " << height << endl;
 
-    //if there's an error, display it
-    if (error) std::cout << "decoder error " << error << ": " <<       lodepng_error_text(error) << std::endl;
-    else
-    {
-        img = image;
-        w = width;
-        h = height;
-        cout << "Success" << endl;
-    }
+  //if there's an error, display it
+  if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+  else
+  {
+	  img = image;
+    w = width;
+    h = height;
+    cout << "Success" << endl;
+  }
+
+  // glGenTextures(1,&texture[0]);
+  glTexImage2D(GL_TEXTURE_2D, 0, 4, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, &img[0]);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  // glEnable(GL_TEXTURE_2D);
+  glShadeModel(GL_FLAT);
 }
 
 void paintBlock(void)
@@ -123,19 +136,40 @@ bool getWallAt(int x, int y)
   }
 }
 
-void paintSprite(void)
+void paintSprite()
 {
   glEnable(GL_TEXTURE_2D);
-  glTexImage2D(GL_TEXTURE_2D, 0, 4, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, &img[0]);
-
   glBegin(GL_QUADS);
   glColor3f(1 ,1 ,0);
-  glTexCoord2f(0, 0); glVertex2f(0+xr,0+yr);
-  glTexCoord2f(1, 0); glVertex2f(SPRITE_SIDE+xr,0+yr);
-  glTexCoord2f(1, 1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-  glTexCoord2f(0, 1); glVertex2f(0+xr,SPRITE_SIDE+yr);
-  glDisable(GL_TEXTURE_2D);
+
+  switch(currSprtDir){
+  case SpriteDirection::LEFT:
+    glTexCoord2f(1, 1); glVertex2f(0+xr,0+yr);
+    glTexCoord2f(0, 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+    glTexCoord2f(0, 0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(1, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+    break;
+  case SpriteDirection::RIGHT:
+    glTexCoord2f(0, 1); glVertex2f(0+xr,0+yr);
+    glTexCoord2f(1, 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+    glTexCoord2f(1, 0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(0, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+    break;
+  case SpriteDirection::UP:
+    glTexCoord2f(0, 0); glVertex2f(0+xr,0+yr);
+    glTexCoord2f(0, 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+    glTexCoord2f(1, 1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(1, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+    break;
+  case SpriteDirection::DOWN:
+    glTexCoord2f(1, 0); glVertex2f(0+xr,0+yr);
+    glTexCoord2f(1, 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+    glTexCoord2f(0, 1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(0, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+    break;
+  }
   glEnd();
+  glDisable(GL_TEXTURE_2D);
 }
 
 void display(void)
@@ -144,9 +178,10 @@ void display(void)
   // glMatrixMode(GL_MODELVIEW);      // To operate on Model-View matrix
   // glLoadIdentity();                // Reset the model-view matrix
 
+  paintMap();
+
   paintSprite();
 
-  paintMap();
 
   glFlush();
   glutPostRedisplay();
@@ -218,24 +253,28 @@ bool moveSpriteTo(SpriteDirection direction)
 
   switch(direction){
   case SpriteDirection::LEFT:
+    currSprtDir = SpriteDirection::LEFT;
     if(wallCollision(sprBlckX - 1,sprBlckY,SpriteMove::HORIZONTAL))
     {
       return false;
     }
     break;
   case SpriteDirection::RIGHT:
+    currSprtDir = SpriteDirection::RIGHT;
     if(wallCollision(sprBlckX + BLOCKS_PER_SPRITE,sprBlckY,SpriteMove::HORIZONTAL))
     {
       return false;
     }
     break;
   case SpriteDirection::UP:
+    currSprtDir = SpriteDirection::UP;
     if(wallCollision(sprBlckX,sprBlckY + BLOCKS_PER_SPRITE,SpriteMove::VERTICAL))
     {
       return false;
     }
     break;
   case SpriteDirection::DOWN:
+    currSprtDir = SpriteDirection::DOWN;
     if(wallCollision(sprBlckX,sprBlckY - 1,SpriteMove::VERTICAL))
     {
       return false;
