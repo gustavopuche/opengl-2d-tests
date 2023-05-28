@@ -1,8 +1,9 @@
 #include "lodepng.h"
+#include "sprites.h"
 #include <GL/glut.h>
 #include <stdlib.h>
-#include<iostream>
-#include<array>
+#include <iostream>
+#include <array>
 
 using namespace std;
 
@@ -16,6 +17,7 @@ enum class SpriteMove {HORIZONTAL,VERTICAL};
 
 SpriteDirection currSprtDir = SpriteDirection::LEFT;
 
+const int TEXCOL = 2;
 const int MAP_SIDE = 40;
 const int BLOCK_SIDE = 10;
 const int SPRITE_SIDE = 40;
@@ -144,32 +146,51 @@ void paintSprite()
 
   switch(currSprtDir){
   case SpriteDirection::LEFT:
-    glTexCoord2f(1, 1); glVertex2f(0+xr,0+yr);
-    glTexCoord2f(0, 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-    glTexCoord2f(0, 0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-    glTexCoord2f(1, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(1.0/TEXCOL, 1); glVertex2f(0+xr,0+yr);
+    glTexCoord2f(0  , 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+    glTexCoord2f(0  , 0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(1.0/TEXCOL, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
     break;
   case SpriteDirection::RIGHT:
     glTexCoord2f(0, 1); glVertex2f(0+xr,0+yr);
-    glTexCoord2f(1, 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-    glTexCoord2f(1, 0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(1.0/TEXCOL, 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+    glTexCoord2f(1.0/TEXCOL, 0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
     glTexCoord2f(0, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
     break;
   case SpriteDirection::UP:
     glTexCoord2f(0, 0); glVertex2f(0+xr,0+yr);
     glTexCoord2f(0, 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-    glTexCoord2f(1, 1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-    glTexCoord2f(1, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(1.0/TEXCOL, 1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(1.0/TEXCOL, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
     break;
   case SpriteDirection::DOWN:
-    glTexCoord2f(1, 0); glVertex2f(0+xr,0+yr);
-    glTexCoord2f(1, 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+    glTexCoord2f(1.0/TEXCOL, 0); glVertex2f(0+xr,0+yr);
+    glTexCoord2f(1.0/TEXCOL, 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
     glTexCoord2f(0, 1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
     glTexCoord2f(0, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
     break;
   }
   glEnd();
   glDisable(GL_TEXTURE_2D);
+}
+
+vector<Sprite> bubbles;
+
+void createBubbles()
+{
+  bubbles.push_back(Sprite(SPRITE_SIDE,xr+SPRITE_SIDE,yr));
+  bubbles.push_back(Sprite(SPRITE_SIDE,xr-SPRITE_SIDE,yr));
+  bubbles[1].setColor(0,1,0);
+  bubbles.push_back(Sprite(SPRITE_SIDE,xr-2*SPRITE_SIDE,yr));
+  bubbles[2].setColor(1,1,1);
+}
+
+void paintBubbles()
+{
+  for(int i = 0;i < bubbles.size(); i++)
+  {
+    bubbles[i].paint();
+  }
 }
 
 void display(void)
@@ -180,8 +201,9 @@ void display(void)
 
   paintMap();
 
-  paintSprite();
+  paintBubbles();
 
+  paintSprite();
 
   glFlush();
   glutPostRedisplay();
@@ -346,7 +368,10 @@ int main(int argc, char** argv)
   glutInitWindowPosition(50, 50);
   glutCreateWindow("sIMPle gAMe!");
 
-  decodeOneStep("pacmat-1.png");
+  // Create bubbles sprites.
+  createBubbles();
+
+  decodeOneStep("pacmat-bubble.png");
   glutDisplayFunc(display); // display callback function.
 
   glClearColor(0,0,0,0);
