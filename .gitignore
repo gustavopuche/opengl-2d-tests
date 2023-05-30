@@ -6,4 +6,5 @@
 !*.cpp
 !*.h
 !*.org
+!*.png
 !CMakeLists.txt

@@ -3,9 +3,7 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <iostream>
-#include <array>
-
-using namespace std;
+#include <vector>
 
 // Global variables to move the object.
 
@@ -23,7 +21,7 @@ const int BLOCK_SIDE = 10;
 const int SPRITE_SIDE = 40;
 const int BLOCKS_PER_SPRITE = SPRITE_SIDE / BLOCK_SIDE;
 
-array<array<int,MAP_SIDE>,MAP_SIDE> gameMap = {{
+std::vector<std::vector<int>> gameMap = {{
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
   {1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
   {1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -78,7 +76,7 @@ void decodeOneStep(const char* filename)
   glBindTexture(GL_TEXTURE_2D, texture[0]);
   //decode
   unsigned error = lodepng::decode(image, width, height, filename);
-  cout << "w: " << width << " " << "h: " << height << endl;
+  std::cout << "w: " << width << " " << "h: " << height << std::endl;
 
   //if there's an error, display it
   if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
@@ -87,7 +85,7 @@ void decodeOneStep(const char* filename)
 	  img = image;
     w = width;
     h = height;
-    cout << "Success" << endl;
+    std::cout << "Success" << std::endl;
   }
 
   // glGenTextures(1,&texture[0]);
@@ -174,12 +172,13 @@ void paintSprite()
   glDisable(GL_TEXTURE_2D);
 }
 
-vector<Sprite> bubbles;
+std::vector<Sprite> bubbles;
 
 void createBubbles()
 {
   bubbles.push_back(Sprite(SPRITE_SIDE,xr+SPRITE_SIDE,yr));
   bubbles.push_back(Sprite(SPRITE_SIDE,xr-SPRITE_SIDE,yr));
+  bubbles[1].setTexture(0,1,2);
   bubbles[1].setColor(0,1,0);
   bubbles.push_back(Sprite(SPRITE_SIDE,xr-2*SPRITE_SIDE,yr));
   bubbles[2].setColor(1,1,1);
@@ -220,10 +219,9 @@ void calculateSpritePos()
 
 void printSpritePos()
 {
-  cout << "(" << xr << "," << yr << ") " ;
-  cout << "Block:[" << (int)xr / 10 << " " << (int)yr / 10 << "] ";
-  cout << "Offset:< "<< (int)xr % 10 << " " << (int)yr % 10 << "> " << endl;
-
+  std::cout << "(" << xr << "," << yr << ") " ;
+  std::cout << "Block:[" << (int)xr / 10 << " " << (int)yr / 10 << "] ";
+  std::cout << "Offset:< "<< (int)xr % 10 << " " << (int)yr % 10 << "> " << std::endl;
 }
 
 bool wallCollision(int x, int y, SpriteMove moving)
@@ -309,7 +307,7 @@ bool moveSpriteTo(SpriteDirection direction)
 
 void collision()
 {
-  cout << "Wall collision!!!" << endl;
+  std::cout << "Wall collision!!!" << std::endl;
 }
 
 void specialKey(int key, int x, int y)
@@ -359,8 +357,7 @@ void specialKey(int key, int x, int y)
 
 int main(int argc, char** argv)
 {
-  cout << "Use arrow keys..." << endl;
-
+  std::cout << "Use arrow keys..." << std::endl;
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);

@@ -1,4 +1,3 @@
-
 class Sprite
 {
  public:
@@ -7,7 +6,6 @@ class Sprite
     x{x},
     y{y}
   {
-
     r = 1.0;
     g = 0.0;
     b = 0.0;
@@ -15,8 +13,10 @@ class Sprite
   void paint();
   void setTexture();
   void setColor(float r, float g, float b);
+  void setTexture(int row, int column, int maxTextures);
  private:
   int side;
   float r,g,b;
+  float u0,u1,v0,v1;
   int x, y;
 };
