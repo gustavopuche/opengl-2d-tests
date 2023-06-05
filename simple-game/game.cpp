@@ -8,20 +8,20 @@
 // Global variables to move the object.
 
 float xr = 180, yr = 170;
-int sprBlckX,sprBlckY,sprOffX,sprOffY;
+size_t sprBlckX,sprBlckY,sprOffX,sprOffY;
 
 enum class SpriteDirection {LEFT,RIGHT,UP,DOWN};
 enum class SpriteMove {HORIZONTAL,VERTICAL};
 
 SpriteDirection currSprtDir = SpriteDirection::LEFT;
 
-const int TEXCOL = 2;
-const int MAP_SIDE = 40;
-const int BLOCK_SIDE = 10;
-const int SPRITE_SIDE = 40;
-const int BLOCKS_PER_SPRITE = SPRITE_SIDE / BLOCK_SIDE;
+const size_t TEXCOL = 2;
+const size_t MAP_SIDE = 40;
+const size_t BLOCK_SIDE = 10;
+const size_t SPRITE_SIDE = 40;
+const size_t BLOCKS_PER_SPRITE = SPRITE_SIDE / BLOCK_SIDE;
 
-std::vector<std::vector<int>> gameMap = {{
+std::vector<std::vector<size_t>> gameMap = {{
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
   {1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
   {1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -111,8 +111,8 @@ void paintBlock(void)
 
 void paintMap(void)
 {
-  for (int y=0; y < MAP_SIDE; y++)
-    for (int x=0; x < MAP_SIDE; x++)
+  for (size_t y=0; y < MAP_SIDE; y++)
+    for (size_t x=0; x < MAP_SIDE; x++)
     {
       if (gameMap[MAP_SIDE - 1 - y][x] == 1)
       {
@@ -124,7 +124,7 @@ void paintMap(void)
     }
 }
 
-bool getWallAt(int x, int y)
+bool getWallAt(size_t x, size_t y)
 {
   if(gameMap[MAP_SIDE - 1 - y][x] == 1)
   {
@@ -186,7 +186,7 @@ void createBubbles()
 
 void paintBubbles()
 {
-  for(int i = 0;i < bubbles.size(); i++)
+  for(size_t i = 0;i < bubbles.size(); i++)
   {
     bubbles[i].paint();
   }
@@ -211,22 +211,22 @@ void display(void)
 
 void calculateSpritePos()
 {
-  sprBlckX = (int)xr / 10;
-  sprBlckY = (int)yr / 10;
-  sprOffX = (int)xr % 10;
-  sprOffY = (int)yr % 10;
+  sprBlckX = (size_t)xr / 10;
+  sprBlckY = (size_t)yr / 10;
+  sprOffX = (size_t)xr % 10;
+  sprOffY = (size_t)yr % 10;
 }
 
 void printSpritePos()
 {
   std::cout << "(" << xr << "," << yr << ") " ;
-  std::cout << "Block:[" << (int)xr / 10 << " " << (int)yr / 10 << "] ";
-  std::cout << "Offset:< "<< (int)xr % 10 << " " << (int)yr % 10 << "> " << std::endl;
+  std::cout << "Block:[" << (size_t)xr / 10 << " " << (size_t)yr / 10 << "] ";
+  std::cout << "Offset:< "<< (size_t)xr % 10 << " " << (size_t)yr % 10 << "> " << std::endl;
 }
 
-bool wallCollision(int x, int y, SpriteMove moving)
+bool wallCollision(size_t x, size_t y, SpriteMove moving)
 {
-  int numChecks = BLOCKS_PER_SPRITE;
+  size_t numChecks = BLOCKS_PER_SPRITE;
   if (moving == SpriteMove::HORIZONTAL)
   {
     if(sprOffX == 0)
@@ -236,7 +236,7 @@ bool wallCollision(int x, int y, SpriteMove moving)
         numChecks++;
       }
 
-      for(int i = 0; i < numChecks; i++)
+      for(size_t i = 0; i < numChecks; i++)
       {
         if(getWallAt(x,y + i))
         {
@@ -254,7 +254,7 @@ bool wallCollision(int x, int y, SpriteMove moving)
         numChecks++;
       }
 
-      for(int i = 0; i < numChecks; i++)
+      for(size_t i = 0; i < numChecks; i++)
       {
         if(getWallAt(x + i,y))
         {
@@ -341,7 +341,7 @@ void specialKey(int key, int x, int y)
      printSpritePos();
      glutPostRedisplay();
      break;
-   case GLUT_KEY_RIGHT: // thwn the right key is pressed.
+   case GLUT_KEY_RIGHT: // when the right key is pressed.
      if(moveSpriteTo(SpriteDirection::RIGHT))
      {
        xr++;
