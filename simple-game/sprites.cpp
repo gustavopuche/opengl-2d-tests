@@ -7,19 +7,17 @@
 
 void Sprite::paint()
 {
+  Position2D pos = screenPos(x, y, mBlockSide);
+
   glEnable(GL_TEXTURE_2D);
   glBegin(GL_QUADS);
   glColor3f(r,g,b);
-  glTexCoord2f(u1  , v1);  glVertex2f(0+x,0+y);
-  glTexCoord2f(u0, v1);  glVertex2f(side+x,0+y);
-  glTexCoord2f(u0, v0);  glVertex2f(side+x,side+y);
-  glTexCoord2f(u1  , v0);  glVertex2f(0+x,side+y);
+  glTexCoord2f(u1  , v1);  glVertex2f(0+pos.x,0+pos.y);
+  glTexCoord2f(u0, v1);  glVertex2f(side+pos.x,0+pos.y);
+  glTexCoord2f(u0, v0);  glVertex2f(side+pos.x,side+pos.y);
+  glTexCoord2f(u1  , v0);  glVertex2f(0+pos.x,side+pos.y);
   glEnd();
   glDisable(GL_TEXTURE_2D);
-}
-
-void Sprite::setTexture()
-{
 }
 
 void Sprite::setColor(float r, float g, float b)
