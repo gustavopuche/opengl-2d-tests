@@ -8,7 +8,7 @@ void SerieFactory::paint()
 {
   for (Sprite elem : mVectorSerie)
   {
-    elem.setTexture(0,1,2);
+    elem.setTexture(0,1,20);
     elem.paint();
   }
 }

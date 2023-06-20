@@ -21,6 +21,7 @@ const size_t MAP_SIDE = 40;
 const size_t BLOCK_SIDE = 10;
 const size_t SPRITE_SIDE = 40;
 const size_t BLOCKS_PER_SPRITE = SPRITE_SIDE / BLOCK_SIDE;
+const size_t TEXTURES_PER_LINE = 20;
 
 std::vector<std::vector<size_t>> gameMap = {{
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -147,34 +148,43 @@ bool getWallAt(size_t x, size_t y)
 
 void paintSprite()
 {
+  float u0,u1,v0,v1;
+  size_t column = 0;
+  size_t row = 0;
+  size_t maxTextures = TEXTURES_PER_LINE;
+  u0 = 0.0 + column * 1.0 / maxTextures;
+  u1 = u0 + 1.0 / maxTextures;
+  v0 = 0.0 + row * 1.0 / maxTextures;
+  v1 = v0 + 1.0 / maxTextures;
+
   glEnable(GL_TEXTURE_2D);
   glBegin(GL_QUADS);
   glColor3f(1 ,1 ,0);
 
   switch(currSprtDir){
   case SpriteDirection::LEFT:
-    glTexCoord2f(1.0/TEXCOL, 1); glVertex2f(0+xr,0+yr);
-    glTexCoord2f(0  , 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-    glTexCoord2f(0  , 0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-    glTexCoord2f(1.0/TEXCOL, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(u1, v1); glVertex2f(0+xr,0+yr);
+    glTexCoord2f(u0  , v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+    glTexCoord2f(u0  , v0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(u1, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
     break;
   case SpriteDirection::RIGHT:
-    glTexCoord2f(0, 1); glVertex2f(0+xr,0+yr);
-    glTexCoord2f(1.0/TEXCOL, 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-    glTexCoord2f(1.0/TEXCOL, 0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-    glTexCoord2f(0, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(u0, v1); glVertex2f(0+xr,0+yr);
+    glTexCoord2f(u1, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+    glTexCoord2f(u1, v0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(u0, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
     break;
   case SpriteDirection::UP:
-    glTexCoord2f(0, 0); glVertex2f(0+xr,0+yr);
-    glTexCoord2f(0, 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-    glTexCoord2f(1.0/TEXCOL, 1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-    glTexCoord2f(1.0/TEXCOL, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(u0, v0); glVertex2f(0+xr,0+yr);
+    glTexCoord2f(u0, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+    glTexCoord2f(u1, v1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(u1, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
     break;
   case SpriteDirection::DOWN:
-    glTexCoord2f(1.0/TEXCOL, 0); glVertex2f(0+xr,0+yr);
-    glTexCoord2f(1.0/TEXCOL, 1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-    glTexCoord2f(0, 1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-    glTexCoord2f(0, 0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(u1, v0); glVertex2f(0+xr,0+yr);
+    glTexCoord2f(u1, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+    glTexCoord2f(u0, v1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(u0, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
     break;
   }
   glEnd();
@@ -187,7 +197,7 @@ void createBubbles()
 {
   bubbles.push_back(Sprite(SPRITE_SIDE,xr+SPRITE_SIDE,yr));
   bubbles.push_back(Sprite(SPRITE_SIDE,xr-SPRITE_SIDE,yr));
-  bubbles[1].setTexture(0,1,2);
+  bubbles[1].setTexture(0,1,20);
   bubbles[1].setColor(0,1,0);
   bubbles.push_back(Sprite(SPRITE_SIDE,xr-2*SPRITE_SIDE,yr));
   bubbles[2].setColor(1,1,1);
