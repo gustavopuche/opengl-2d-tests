@@ -164,8 +164,8 @@ void paintSprite()
   switch(currSprtDir){
   case SpriteDirection::LEFT:
     glTexCoord2f(u1, v1); glVertex2f(0+xr,0+yr);
-    glTexCoord2f(u0  , v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-    glTexCoord2f(u0  , v0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+    glTexCoord2f(u0, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+    glTexCoord2f(u0, v0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
     glTexCoord2f(u1, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
     break;
   case SpriteDirection::RIGHT:
@@ -197,7 +197,7 @@ void createBubbles()
 {
   bubbles.push_back(Sprite(SPRITE_SIDE,xr+SPRITE_SIDE,yr));
   bubbles.push_back(Sprite(SPRITE_SIDE,xr-SPRITE_SIDE,yr));
-  bubbles[1].setTexture(0,1,20);
+  bubbles[1].setTexture(0,1);
   bubbles[1].setColor(0,1,0);
   bubbles.push_back(Sprite(SPRITE_SIDE,xr-2*SPRITE_SIDE,yr));
   bubbles[2].setColor(1,1,1);
@@ -336,7 +336,7 @@ void specialKey(int key, int x, int y)
      {
        yr++;
      }
-     printSpritePos();
+     // printSpritePos();
      glutPostRedisplay();
      break;
    case GLUT_KEY_DOWN: // when the down key is pressed.
@@ -344,7 +344,7 @@ void specialKey(int key, int x, int y)
      {
        yr--;
      }
-     printSpritePos();
+     // printSpritePos();
      glutPostRedisplay();
      break;
    case GLUT_KEY_LEFT: // when the left key is pressed.
@@ -356,7 +356,7 @@ void specialKey(int key, int x, int y)
      {
        collision();
      }
-     printSpritePos();
+     // printSpritePos();
      glutPostRedisplay();
      break;
    case GLUT_KEY_RIGHT: // when the right key is pressed.
@@ -368,7 +368,7 @@ void specialKey(int key, int x, int y)
      {
        collision();
      }
-     printSpritePos();
+     // printSpritePos();
      break;
   }
 }

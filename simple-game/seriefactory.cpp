@@ -8,11 +8,11 @@ void SerieFactory::paint()
 {
   for (Sprite elem : mVectorSerie)
   {
-    elem.setTexture(0,1,20);
-    elem.paint();
+    elem.setTexture(0,1).paint().paintValue();
   }
 }
 
+// Generate all serie sprites
 void SerieFactory::generate ()
 {
   // Block initial position.
@@ -23,6 +23,7 @@ void SerieFactory::generate ()
 
   emptyVisit();
 }
+
 void SerieFactory::emptyVisit ()
 {
   if (mVisit.size() != 0) // Final condition.
