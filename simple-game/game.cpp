@@ -111,7 +111,7 @@ void decodeOneStep(const char* filename)
 void paintBlock(void)
 {
   glBegin(GL_QUADS);
-  glColor3f(1 ,0.5 ,0);
+  glColor3f(1.0 ,0.5 ,0.0);
   glVertex2f(0,0);
   glVertex2f(BLOCK_SIDE,0);
   glVertex2f(BLOCK_SIDE,BLOCK_SIDE);
@@ -159,7 +159,7 @@ void paintSprite()
 
   glEnable(GL_TEXTURE_2D);
   glBegin(GL_QUADS);
-  glColor3f(1 ,1 ,0);
+  glColor4f(0.0f, 0.0f, 1.0f, 0.0f);
 
   switch(currSprtDir){
   case SpriteDirection::LEFT:
@@ -389,7 +389,7 @@ int main(int argc, char** argv)
   decodeOneStep("pacmat-bubble.png");
   glutDisplayFunc(display); // display callback function.
 
-  glClearColor(0,0,0,0);
+  glClearColor(0.0f,0.0f,1.0f,0.0f);
   gluOrtho2D(0.0,400,0.0,400);
   glutSpecialFunc(specialKey); // kayboard callback function.
 

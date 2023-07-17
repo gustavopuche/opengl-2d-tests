@@ -9,23 +9,27 @@ class Sprite : public TransformImpl
     y{y},
     mValue{value},
     mBlockSide{blockSide},
-    mMaxTextures{maxTextures}
+    mMaxTextures{maxTextures},
+    mMainColor{ColorRGB(1.0,0.0,0.0)},
+    mValueColor1{ColorRGB(1.0,0.0,0.0)},
+    mValueColor2{ColorRGB(1.0,0.0,0.0)}
   {
-    r = 1.0;
-    g = 0.0;
-    b = 0.0;
+    mMainColor   = PredefinedColors::get().randColor();
+    mValueColor1 = PredefinedColors::get().randColor();
+    mValueColor2 = PredefinedColors::get().randColor();
   }
 
   // Implements fluent builder pattern.
   Sprite& paint();
-  Sprite& randColor();
   Sprite& paintValue();
   Sprite& setColor(float r, float g, float b);
   Sprite& setTexture(int row, int column);
   Position2D getPos();
  private:
   size_t side;
-  float r,g,b;
+  ColorRGB mMainColor;
+  ColorRGB mValueColor1;
+  ColorRGB mValueColor2;
   float u0,u1,v0,v1;
   size_t x, y;
   size_t mValue;
