@@ -11,7 +11,7 @@ class SerieFactory
                std::function<int(int)> fSerie,
                size_t x = 0,
                size_t y = 0,
-               size_t blockside = 10,
+               size_t blockside = 40,
                size_t spriteside = 40) :
     mScreen{map},
     mBlockSide{blockside},
