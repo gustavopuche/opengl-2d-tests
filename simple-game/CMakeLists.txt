@@ -18,7 +18,7 @@ add_executable( game ${SRC} )
 # target_link_libraries(game Threads::Threads)
 # include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} )
 target_include_directories (game PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS} ${CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES})
-target_link_libraries(game ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
+target_link_libraries(game ${OPENGL_LIBRARIES} ${GLUT_glut_LIBRARY} )
 add_custom_target(run)
 add_custom_command( TARGET run
 	POST_BUILD COMMAND ./game)

@@ -11,7 +11,11 @@ add_executable( first first.cpp )
 # target_link_libraries(first Threads::Threads)
 include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} )
 
-target_link_libraries(first ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
+target_link_libraries(first ${OPENGL_LIBRARIES} ${GLUT_glut_LIBRARY} )
 add_custom_target(run)
 add_custom_command( TARGET run
 	POST_BUILD COMMAND ./first)
+message("Find glut is " ${GLUT_FOUND})
+message("Include GLUT is " ${GLUT_INCLUDE_DIRS})
+message("Link GLUT is " ${GLUT_glut_LIBRARY})
+      

@@ -3,10 +3,13 @@
 #include <random>
 #include <iterator>
 #include <iostream>
+#include <cstdlib>
+#include <algorithm>
+#include <iterator> // std::distance
 
 void SerieFactory::paint()
 {
-  for (Sprite elem : mVectorSerie)
+  for (Sprite elem : mListSerie)
   {
     elem.setTexture(0,1).paint().paintValue();
   }
@@ -43,7 +46,7 @@ void SerieFactory::emptyVisit ()
 void SerieFactory::putSprite(size_t x, size_t y, std::function<int(int)> fSerie)
 {
   int value = fSerie(mCurrent++);
-  mVectorSerie.push_back(Sprite(mSpriteSide,x,y,value,mBlockSide));
+  mListSerie.push_back(Sprite(mSpriteSide,x,y,value,mBlockSide));
 
   std::cout << "Add sprite ("<<x<<","<<y<<")serie for x(" << mCurrent - 1 << ") = " << value << std::endl;
 }
@@ -90,4 +93,29 @@ void SerieFactory::addNeighborgs(size_t x, size_t y)
   ry = y;
   if (mScreen.inLimits(rx,ry))
     addElem(rx,ry);
+}
+
+int SerieFactory::findElem(size_t x, size_t y, size_t offset)
+{
+  auto IsNear = [=](Sprite spr)
+  {
+    if ((std::abs((int)spr.getPos().x - (int)x) < offset) && (std::abs((int)spr.getPos().y - (int)y) < offset))
+    {
+      return true;
+    }
+
+    return false;
+  };
+
+  std::list<Sprite>::iterator it = std::find_if(mListSerie.begin(), mListSerie.end(), IsNear);
+
+  if (it != mListSerie.end())
+  {
+    // std::cout << "The elment is:... " << std::distance(mListSerie.begin(),it)  << " ... near x " << x << " y " << y << '\n';
+    return std::distance(mListSerie.begin(),it);
+  }
+
+  // std::cout << "The is no elment near x " << x << " y " << y << '\n';
+
+  return -1;
 }

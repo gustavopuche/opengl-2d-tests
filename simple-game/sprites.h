@@ -25,6 +25,7 @@ class Sprite : public TransformImpl
   Sprite& setColor(float r, float g, float b);
   Sprite& setTexture(int row, int column);
   Position2D getPos();
+  size_t getValue(){return mValue;};
  private:
   size_t side;
   ColorRGB mMainColor;

@@ -29,10 +29,16 @@ class SerieFactory
     mBlockPerSprite = mSpriteSide / mBlockSide;
     generate();
   }
+  // Returns index in Sprite vector (aka mVectorSerie)
+  // Returns -1 if no element in found in position +/- offset
 
   void paint();
+
+
+  int findElem(size_t x, size_t y, size_t offset);
+
  private:
-  std::vector<Sprite>     mVectorSerie;
+  std::list<Sprite>     mListSerie;
   Screen                  mScreen;
   std::list<Position2D>   mVisit;
   size_t                  mSpriteSide;

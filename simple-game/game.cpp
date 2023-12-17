@@ -210,6 +210,8 @@ void printSpritePos()
 
 bool wallCollision(size_t x, size_t y, SpriteMove moving)
 {
+  upAllBubbles->findElem(x,y,10);
+
   size_t numChecks = BLOCKS_PER_SPRITE;
   if (moving == SpriteMove::HORIZONTAL)
   {

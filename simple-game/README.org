@@ -1,0 +1,7 @@
+* PACMAT game
+
+The aim of this eductional game is to learn mathematical series to the child.
+
+* HOW TO PLAY
+
+The way to play is like pacman just click a direction and the hero will continue until stop when crashes with a wall or another direction key is touched.
