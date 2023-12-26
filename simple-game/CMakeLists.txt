@@ -15,6 +15,7 @@ file(GLOB SRC
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 add_executable( game ${SRC} )
+set (CMAKE_CXX_FLAGS "-g")
 # target_link_libraries(game Threads::Threads)
 # include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} )
 target_include_directories (game PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS} ${CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES})

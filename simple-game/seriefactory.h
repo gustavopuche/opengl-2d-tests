@@ -34,11 +34,12 @@ class SerieFactory
 
   void paint();
 
-
+  size_t getElem(size_t x, size_t y);
+  void clearElem(size_t x, size_t y);
   int findElem(size_t x, size_t y, size_t offset);
 
  private:
-  std::list<Sprite>     mListSerie;
+  std::list<Sprite>       mListSerie;
   Screen                  mScreen;
   std::list<Position2D>   mVisit;
   size_t                  mSpriteSide;

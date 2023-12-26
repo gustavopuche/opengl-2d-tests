@@ -48,6 +48,10 @@ void SerieFactory::putSprite(size_t x, size_t y, std::function<int(int)> fSerie)
   int value = fSerie(mCurrent++);
   mListSerie.push_back(Sprite(mSpriteSide,x,y,value,mBlockSide));
 
+  // Store value in screen map.
+  // Be aware to not use 0 and 1 as part of the serie.
+  // mScreen.setValue(x,y,value);
+
   std::cout << "Add sprite ("<<x<<","<<y<<")serie for x(" << mCurrent - 1 << ") = " << value << std::endl;
 }
 
@@ -67,6 +71,8 @@ void SerieFactory::blockMapPosition(size_t x, size_t y)
     for (size_t iy = 0; iy < mBlockPerSprite; iy++)
     {
       mScreen.setWall(x + ix, y + iy);
+      // Debug.
+      mScreen.dump();
     }
   }
 }
@@ -118,4 +124,15 @@ int SerieFactory::findElem(size_t x, size_t y, size_t offset)
   // std::cout << "The is no elment near x " << x << " y " << y << '\n';
 
   return -1;
+}
+
+
+size_t SerieFactory::getElem(size_t x, size_t y)
+{
+  return mScreen.getValue(x,y);
+}
+
+void SerieFactory::clearElem(size_t x, size_t y)
+{
+  mScreen.setValue(x,y,0);
 }
