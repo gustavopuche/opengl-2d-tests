@@ -25,6 +25,9 @@ void SerieFactory::generate ()
   addNeighborgs(mSx,mSy);
 
   emptyVisit();
+
+  // Debug.
+  mScreen.dump();
 }
 
 void SerieFactory::emptyVisit ()
@@ -50,9 +53,10 @@ void SerieFactory::putSprite(size_t x, size_t y, std::function<int(int)> fSerie)
 
   // Store value in screen map.
   // Be aware to not use 0 and 1 as part of the serie.
-  // mScreen.setValue(x,y,value);
+  mScreen.setValue(x,y,value);
 
-  std::cout << "Add sprite ("<<x<<","<<y<<")serie for x(" << mCurrent - 1 << ") = " << value << std::endl;
+  // std::cout << "Add sprite ("<<x<<","<<y<<")serie for current(" << mCurrent - 1 << ") = " << value << std::endl;
+  // mScreen.dump();
 }
 
 void SerieFactory::addElem(size_t x, size_t y) {
@@ -71,8 +75,9 @@ void SerieFactory::blockMapPosition(size_t x, size_t y)
     for (size_t iy = 0; iy < mBlockPerSprite; iy++)
     {
       mScreen.setWall(x + ix, y + iy);
-      // Debug.
-      mScreen.dump();
+      // // Debug.
+      // std::cout << "x:" << x << " y:" << y << " (ix,iy) = (" << ix << "," << iy << ")" << std::endl;
+      // mScreen.dump();
     }
   }
 }

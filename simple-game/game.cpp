@@ -56,7 +56,7 @@ std::vector<std::vector<size_t>> gameMap = {{
 std::vector<unsigned char> img;
 unsigned w, h;
 GLuint texture[0];
-auto serieFunct = [](int x){return x * 4;};
+auto serieFunct = [](int x){return (x * 4)%100;};
 int serieCurrent = serieFunct(1);
 
 void calculateSpritePos()
