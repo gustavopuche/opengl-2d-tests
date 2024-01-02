@@ -141,3 +141,15 @@ void SerieFactory::clearElem(size_t x, size_t y)
 {
   mScreen.setValue(x,y,0);
 }
+
+size_t SerieFactory::getFrontValue()
+{
+  return mListSerie.front().getValue();
+}
+
+Sprite SerieFactory::pop()
+{
+  Sprite sprite = mListSerie.front();
+  mListSerie.pop_front();
+  return sprite;
+}

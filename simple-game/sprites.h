@@ -1,3 +1,5 @@
+#ifndef SPRITE_H
+#define SPRITE_H
 #include "transImpl.h"
 
 class Sprite : public TransformImpl
@@ -25,6 +27,7 @@ class Sprite : public TransformImpl
   Sprite& setColor(float r, float g, float b);
   Sprite& setTexture(int row, int column);
   Position2D getPos();
+  void setPos(size_t x, size_t y);
   size_t getValue(){return mValue;};
  private:
   size_t side;
@@ -37,3 +40,4 @@ class Sprite : public TransformImpl
   size_t mBlockSide;
   size_t mMaxTextures;
 };
+#endif

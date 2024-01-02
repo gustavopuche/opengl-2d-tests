@@ -38,6 +38,9 @@ class SerieFactory
   void clearElem(size_t x, size_t y);
   int findElem(size_t x, size_t y, size_t offset);
 
+  size_t getFrontValue();
+  Sprite pop();
+
  private:
   std::list<Sprite>       mListSerie;
   Screen                  mScreen;

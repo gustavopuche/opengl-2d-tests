@@ -13,10 +13,10 @@ Sprite& Sprite::paint()
   glEnable(GL_TEXTURE_2D);
   glBegin(GL_QUADS);
   glColor3f(mMainColor.r,mMainColor.g,mMainColor.b);
-  glTexCoord2f(u1  , v1);  glVertex2f(0+pos.x,0+pos.y);
+  glTexCoord2f(u1, v1);  glVertex2f(0+pos.x,0+pos.y);
   glTexCoord2f(u0, v1);  glVertex2f(side+pos.x,0+pos.y);
   glTexCoord2f(u0, v0);  glVertex2f(side+pos.x,side+pos.y);
-  glTexCoord2f(u1  , v0);  glVertex2f(0+pos.x,side+pos.y);
+  glTexCoord2f(u1, v0);  glVertex2f(0+pos.x,side+pos.y);
   glEnd();
   glDisable(GL_TEXTURE_2D);
 
@@ -102,4 +102,11 @@ Sprite& Sprite::setTexture (int row,int column)
 Position2D Sprite::getPos()
 {
   return Position2D(x,y);
+}
+
+void Sprite::setPos(size_t x, size_t y)
+{
+
+  this->x = x;
+  this->y = y;
 }
