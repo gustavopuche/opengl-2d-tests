@@ -153,3 +153,8 @@ Sprite SerieFactory::pop()
   mListSerie.pop_front();
   return sprite;
 }
+
+Sprite SerieFactory::front()
+{
+  return mListSerie.front();
+}

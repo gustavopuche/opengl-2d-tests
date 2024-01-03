@@ -30,7 +30,7 @@ Sprite& Sprite::paintValue()
   size_t x0, x1,y0,y1;
   size_t units, tens;
   units = mValue % 10;
-  tens  = mValue / 10;
+  tens  = (mValue% 100) / 10;
 
   float lu0, lu1,lv0,lv1;
   size_t row = 1;

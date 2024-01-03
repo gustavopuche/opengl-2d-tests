@@ -31,6 +31,7 @@ class GameScore
 
   void paint();
   void add(Sprite sprite);
+  void addNext(Sprite sprite);
  private:
   void overflow();
   std::vector<std::vector<Sprite>> mPanel;

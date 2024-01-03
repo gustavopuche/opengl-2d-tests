@@ -40,6 +40,7 @@ class SerieFactory
 
   size_t getFrontValue();
   Sprite pop();
+  Sprite front();
 
  private:
   std::list<Sprite>       mListSerie;

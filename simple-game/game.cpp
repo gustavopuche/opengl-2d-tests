@@ -10,7 +10,7 @@
 // Global variables to move the object.
 
 float xr = 40, yr = 40;
-float sprSpeed = 2;
+float sprSpeed = 5;
 size_t sprBlckX,sprBlckY,sprOffX,sprOffY;
 
 enum class SpriteDirection {LEFT,RIGHT,UP,DOWN};
@@ -83,6 +83,7 @@ auto serieFunct = [](int x)
         result = (x % max) * 6;
       }
 
+      result += rounds * 100;
       return result;
     };
 int serieCurrent = serieFunct(1);
@@ -236,6 +237,7 @@ bool wallCollision(size_t x, size_t y, SpriteMove moving)
     if (mapValue == upAllBubbles->getFrontValue())
     {
       scorePanel->add(upAllBubbles->pop());
+      scorePanel->addNext(upAllBubbles->front());
       upAllBubbles->clearElem(x,y);
     }
     else
