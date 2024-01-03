@@ -18,7 +18,8 @@ class SerieFactory
     mSpriteSide{spriteside},
     mSx{x},
     mSy{y},
-    mFuncSerie{fSerie}
+    mFuncSerie{fSerie},
+    mHoleNow{false}
   {
     mR = 1.0;
     mG = 1.0;
@@ -31,6 +32,8 @@ class SerieFactory
   }
   // Returns index in Sprite vector (aka mVectorSerie)
   // Returns -1 if no element in found in position +/- offset
+
+  enum class SerieDirection {LEFT,RIGHT,UP,DOWN};
 
   void paint();
 
@@ -53,11 +56,20 @@ class SerieFactory
   float                   mR,mG,mB;
   int                     mCurrent; // Current x       value to calculate fSerie(x)
   std::function<int(int)> mFuncSerie;
+  bool                    mHoleNow;
+
+  void generateFluentHoles();
+  void addFluentHoles(size_t x, size_t y);
+  bool followFluentHoles(size_t x, size_t y, SerieDirection direction);
+  std::vector<SerieDirection> possibleDirections(size_t x, size_t y);
+  Position2D getPositionAtDirection(size_t x, size_t y, SerieDirection direction);
 
   void generate();
   void addNeighborgs(size_t x, size_t y);
   void addElem(size_t x, size_t y);
   void emptyVisit();
+
   void blockMapPosition(size_t x,size_t y);
   void putSprite(size_t x, size_t y, std::function<int(int)> fSerie);
+  void putSpriteHole(size_t x, size_t y, std::function<int(int)> fSerie);
 };
