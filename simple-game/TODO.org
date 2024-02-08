@@ -1,6 +1,6 @@
-* TODO [0/2]
+* TODO [1/2]
 
 - [ ] Show operation
-- [ ] Paint bubble in panel [0/2]
-  - [ ] Delete bubble from screen.
-  - [ ] Add to panels list and display.
+- [X] Paint bubble in panel [2/2]
+  - [X] Delete bubble from screen.
+  - [X] Add to panels list and display.

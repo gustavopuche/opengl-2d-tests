@@ -32,110 +32,157 @@ void SerieFactory::generate ()
 
 void SerieFactory::generateFluentHoles()
 {
+  size_t x = mSx;
+  size_t y = mSy;
+
+  PositionDirection posDir;
+
   // Block initial position.
-  blockMapPosition(mSx,mSy);
+  blockMapPosition(x,y);
 
-  // Paths to follow
-  addFluentHoles(mSx,mSy);
-}
+  // Get possible directions unsorted.
+  possibleDirections(x, y);
 
-void SerieFactory::addFluentHoles(size_t x, size_t y)
-{
-  std::vector<SerieDirection> directions = possibleDirections(x, y);
-
-  // Follow direction until crossroad
-  for (auto direction : directions)
+  while (!mStackDir.empty());
   {
-    // TODO: this is NOT working.
-    followFluentHoles(x, y, direction);
+    // put next serie sprite.
+    putSprite(x, y, mFuncSerie);
+
+    posDir = mStackDir.top();
+    mStackDir.pop();
+
+    // Update position.
+    MoveTo(posDir,x,y);
+
+    // Block initial position.
+    blockMapPosition(x,y);
+
+    // Get possible directions unsorted.
+    possibleDirections(x, y);
   }
 }
 
-std::vector<SerieFactory::SerieDirection> SerieFactory::possibleDirections(size_t x, size_t y)
+void SerieFactory::MoveTo(PositionDirection posd, size_t& x, size_t& y)
 {
-  std::vector<SerieDirection> directions;
+  // Update position if no way.
+  x = posd.position.x;
+  y = posd.position.y;
 
-  size_t rx;
-  size_t ry;
-  // Up
-  rx = x;
-  ry = y + mBlockPerSprite;
-  if (!mScreen.getPos(rx,ry))
-  {
-    directions.push_back(SerieDirection::UP);
-  }
-  // Right
-  rx = x + mBlockPerSprite;
-  ry = y;
-  if (!mScreen.getPos(rx,ry))
-  {
-    directions.push_back(SerieDirection::RIGHT);
-  }
-  // Down
-  rx = x;
-  ry = y - mBlockPerSprite;
-  if (mScreen.inLimits(rx,ry))
-  {
-    if (!mScreen.getPos(rx,ry))
-    {
-      directions.push_back(SerieDirection::DOWN);
-    }
-  }
-  // Left
-  rx = x - mBlockPerSprite;
-  ry = y;
-  if (mScreen.inLimits(rx,ry))
-  {
-    if (!mScreen.getPos(rx,ry))
-    {
-      directions.push_back(SerieDirection::LEFT);
-    }
-  }
-
-  return directions;
-}
-
-Position2D SerieFactory::getPositionAtDirection(size_t x, size_t y,
-                                                SerieDirection direction)
-{
-  Position2D position{x,y};
-
-  switch(direction){
+  // Move to new position.
+  switch(posd.direction){
    case SerieDirection::LEFT:
-     position.x = x - mBlockPerSprite;
-     position.y = y;
+     x = x - 1;
     break;
    case SerieDirection::RIGHT:
-     position.x = x + mBlockPerSprite;
-     position.y = y;
+     x = x + 1;
      break;
    case SerieDirection::UP:
-     position.x = x;
-     position.y = y + mBlockPerSprite;
+     y = y + 1;
      break;
    case SerieDirection::DOWN:
-     position.x = x;
-     position.y = y - mBlockPerSprite;
+     y = y - 1;
      break;
   }
-
-  return position;
 }
 
-bool SerieFactory::followFluentHoles(size_t x, size_t y, SerieDirection direction)
+size_t SerieFactory::possibleDirections(size_t x, size_t y)
 {
-  std::vector<SerieDirection> directions = possibleDirections(x, y);
+  size_t result = 0;
+  std::list<SerieDirection> directions = {
+    SerieDirection::LEFT,
+    SerieDirection::RIGHT,
+    SerieDirection::UP,
+    SerieDirection::DOWN};
 
-  if ((directions.size() == 1) && (directions[0] == direction))
+  PositionDirection posDir;
+
+  while (directions.size() != 0)
   {
-    Position2D position = getPositionAtDirection(x,y,direction);
-    putSpriteHole(position.x, position.y, mFuncSerie); // put next serie sprite
+    size_t i = (size_t) rand() % directions.size();
+    auto it = directions.begin();
+    auto choice = std::next(it,i);
 
-    return true;
+    switch((*choice)){
+     case SerieDirection::LEFT:
+       posDir.position.x = x - mBlockPerSprite;
+       posDir.position.y = y;
+       if (mScreen.inLimits(posDir.position.x,posDir.position.y))
+       {
+         if (!mScreen.getPos(posDir.position.x,posDir.position.y))
+         {
+           posDir.direction = SerieDirection::LEFT;
+           mStackDir.push(posDir);
+           result++;
+         }
+       }
+       break;
+     case SerieDirection::RIGHT:
+       posDir.position.x = x + mBlockPerSprite;
+       posDir.position.y = y;
+       if (!mScreen.getPos(posDir.position.x,posDir.position.y))
+       {
+         posDir.direction = SerieDirection::RIGHT;
+         mStackDir.push(posDir);
+         result++;
+       }
+       break;
+     case SerieDirection::UP:
+       posDir.position.x = x;
+       posDir.position.y = y + mBlockPerSprite;
+       if (!mScreen.getPos(posDir.position.x,posDir.position.y))
+       {
+         posDir.direction = SerieDirection::UP;
+         mStackDir.push(posDir);
+         result++;
+       }
+       break;
+     case SerieDirection::DOWN:
+       posDir.position.x = x;
+       posDir.position.y = y - mBlockPerSprite;
+       if (mScreen.inLimits(posDir.position.x,posDir.position.y))
+       {
+         if (!mScreen.getPos(posDir.position.x,posDir.position.y))
+         {
+           posDir.direction = SerieDirection::DOWN;
+           mStackDir.push(posDir);
+           result++;
+         }
+       }
+       break;
+    }
+
+    directions.erase(choice);
   }
 
-  return false;
+  return result;
 }
+
+// Position2D SerieFactory::getPositionAtDirection(size_t x, size_t y,
+//                                                 SerieDirection direction)
+// {
+//   Position2D position{x,y};
+
+//   switch(direction){
+//    case SerieDirection::LEFT:
+//      position.x = x - mBlockPerSprite;
+//      position.y = y;
+//     break;
+//    case SerieDirection::RIGHT:
+//      position.x = x + mBlockPerSprite;
+//      position.y = y;
+//      break;
+//    case SerieDirection::UP:
+//      position.x = x;
+//      position.y = y + mBlockPerSprite;
+//      break;
+//    case SerieDirection::DOWN:
+//      position.x = x;
+//      position.y = y - mBlockPerSprite;
+//      break;
+//   }
+
+//   return position;
+// }
 
 void SerieFactory::putSpriteHole(size_t x, size_t y, std::function<int(int)> fSerie)
 {

@@ -3,6 +3,7 @@
 #include <vector>
 #include <list>
 #include <functional>
+#include <stack>
 
 class SerieFactory
 {
@@ -28,12 +29,20 @@ class SerieFactory
     mCurrent = 1;
 
     mBlockPerSprite = mSpriteSide / mBlockSide;
-    generate();
+    generateFluentHoles();
   }
   // Returns index in Sprite vector (aka mVectorSerie)
   // Returns -1 if no element in found in position +/- offset
 
   enum class SerieDirection {LEFT,RIGHT,UP,DOWN};
+
+  struct PositionDirection
+  {
+    PositionDirection():position(0, 0),direction(SerieDirection::RIGHT){};
+
+    Position2D position;
+    SerieDirection direction;
+  };
 
   void paint();
 
@@ -46,6 +55,7 @@ class SerieFactory
   Sprite front();
 
  private:
+  std::stack<PositionDirection> mStackDir;
   std::list<Sprite>       mListSerie;
   Screen                  mScreen;
   std::list<Position2D>   mVisit;
@@ -59,10 +69,8 @@ class SerieFactory
   bool                    mHoleNow;
 
   void generateFluentHoles();
-  void addFluentHoles(size_t x, size_t y);
-  bool followFluentHoles(size_t x, size_t y, SerieDirection direction);
-  std::vector<SerieDirection> possibleDirections(size_t x, size_t y);
-  Position2D getPositionAtDirection(size_t x, size_t y, SerieDirection direction);
+  size_t possibleDirections(size_t x, size_t y);
+  void MoveTo(PositionDirection posd, size_t& x, size_t& y);
 
   void generate();
   void addNeighborgs(size_t x, size_t y);
