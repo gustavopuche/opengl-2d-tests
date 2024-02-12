@@ -4,6 +4,7 @@
 #include <aio.h>
 #include <vector>
 #include <iostream>
+#include <iomanip>
 
 struct Position2D
 {
@@ -58,11 +59,7 @@ void dump(const T& container)
   {
     for (const auto& x : inner)
     {
-      if (x < 10)
-      {
-        std::cout << " ";
-      }
-      std::cout << x << " " ;
+      std::cout << std::right << std::setw(6) << x;
     }
     std::cout << std::endl;
   }

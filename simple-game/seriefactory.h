@@ -20,7 +20,7 @@ class SerieFactory
     mSx{x},
     mSy{y},
     mFuncSerie{fSerie},
-    mHoleNow{false}
+    mHoleNow{true}
   {
     mR = 1.0;
     mG = 1.0;
