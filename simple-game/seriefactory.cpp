@@ -48,13 +48,15 @@ void SerieFactory::generateFluentHoles()
     // put next serie sprite.
     putSpriteHole(x, y, mFuncSerie);
 
-    posDir = mStackDir.top();
-    mStackDir.pop();
+    do
+    {
+      posDir = mStackDir.top();
+      mStackDir.pop();
 
-    // Update position.
-    MoveTo(posDir,x,y);
+      // Update position.
+    }while(!mStackDir.empty() && !MoveTo(posDir,x,y));
 
-    // Block initial position.
+    // Block position.
     blockMapPosition(x,y);
 
     // Get possible directions unsorted.
@@ -65,7 +67,7 @@ void SerieFactory::generateFluentHoles()
    mScreen.dump();
 }
 
-void SerieFactory::MoveTo(PositionDirection posd, size_t& x, size_t& y)
+bool SerieFactory::MoveTo(PositionDirection posd, size_t& x, size_t& y)
 {
   // Update position if no way.
   x = posd.position.x;
@@ -86,6 +88,8 @@ void SerieFactory::MoveTo(PositionDirection posd, size_t& x, size_t& y)
      y = y - 1;
      break;
   }
+
+  return !mScreen.getPos(x,y);
 }
 
 size_t SerieFactory::possibleDirections(size_t x, size_t y)

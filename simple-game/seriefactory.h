@@ -70,7 +70,7 @@ class SerieFactory
 
   void generateFluentHoles();
   size_t possibleDirections(size_t x, size_t y);
-  void MoveTo(PositionDirection posd, size_t& x, size_t& y);
+  bool MoveTo(PositionDirection posd, size_t& x, size_t& y);
 
   void generate();
   void addNeighborgs(size_t x, size_t y);
