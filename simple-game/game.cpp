@@ -6,11 +6,16 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <time.h>
 
 // Global variables to move the object.
 
+size_t initialTime = time(NULL);
+size_t finalTime;
+size_t frameCount = 0;
+
 float xr = 40, yr = 40;
-float sprSpeed = 5;
+float sprSpeed = 2;
 size_t sprBlckX,sprBlckY,sprOffX,sprOffY;
 
 enum class SpriteDirection {LEFT,RIGHT,UP,DOWN};
@@ -26,6 +31,8 @@ const size_t BLOCK_SIDE = 40;
 const size_t SPRITE_SIDE = 40;
 const size_t BLOCKS_PER_SPRITE = SPRITE_SIDE / BLOCK_SIDE;
 const size_t TEXTURES_PER_LINE = 20;
+
+const size_t FPS = 50;
 
 std::vector<std::vector<size_t>> gameMap = {{
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -395,7 +402,7 @@ void specialKey(int key, int x, int y)
        nextDir = SpriteDirection::UP;
      }
      // printSpritePos();
-     glutPostRedisplay();
+     // glutPostRedisplay();
      break;
    case GLUT_KEY_DOWN: // when the down key is pressed.
      if(canMoveSpriteTo(SpriteDirection::DOWN))
@@ -408,7 +415,7 @@ void specialKey(int key, int x, int y)
        nextDir = SpriteDirection::DOWN;
      }
      // printSpritePos();
-     glutPostRedisplay();
+     // glutPostRedisplay();
      break;
    case GLUT_KEY_LEFT: // when the left key is pressed.
      if(canMoveSpriteTo(SpriteDirection::LEFT))
@@ -421,7 +428,7 @@ void specialKey(int key, int x, int y)
        nextDir = SpriteDirection::LEFT;
      }
      // printSpritePos();
-     glutPostRedisplay();
+     // glutPostRedisplay();
      break;
    case GLUT_KEY_RIGHT: // when the right key is pressed.
      if(canMoveSpriteTo(SpriteDirection::RIGHT))
@@ -468,8 +475,22 @@ void display(void)
   paintSprite();
 
   glFlush();
-  glutPostRedisplay();
   glutSwapBuffers();
+
+  frameCount++;
+  finalTime = time(NULL);
+  if (finalTime - initialTime > 0)
+  {
+    std::cout << "FPS: " << frameCount << std::endl;
+    frameCount = 0;
+    initialTime = finalTime;
+  }
+}
+
+void timer_callback(int)
+{
+  glutPostRedisplay();
+  glutTimerFunc(1000 / FPS, timer_callback, 0);
 }
 
 int main(int argc, char** argv)
@@ -496,6 +517,8 @@ int main(int argc, char** argv)
   glClearColor(0.0f,0.0f,0.0f,0.0f);
   gluOrtho2D(0.0,1080,0.0,1080);
   glutSpecialFunc(specialKey); // kayboard callback function.
+
+  glutTimerFunc(0, timer_callback, 0);
 
   glutMainLoop();
   return 0;
