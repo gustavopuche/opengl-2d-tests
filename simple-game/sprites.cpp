@@ -23,6 +23,55 @@ Sprite& Sprite::paint()
   return *this;
 }
 
+Sprite& Sprite::paintAnimationFrame()
+{
+  float lu0, lu1,lv0,lv1;
+
+  // Animation Frame texture.
+  lu0 = 0.0 + mCurrentAnimation * 1.0 / mMaxTextures;
+  lu1 = lu0 + 1.0 / mMaxTextures;
+  lv0 = 0.0 + v0 * 1.0 / mMaxTextures;
+  lv1 = lv0 + 1.0 / mMaxTextures;
+
+
+  Position2D pos = screenPos(x, y, mBlockSide);
+
+  glEnable(GL_TEXTURE_2D);
+  glBegin(GL_QUADS);
+  glColor3f(mMainColor.r,mMainColor.g,mMainColor.b);
+  switch(mCurrentSpriteDirection){
+  case SpriteDirection::LEFT:
+    glTexCoord2f(lu1, lv1); glVertex2f(0+pos.x,0+pos.y);
+    glTexCoord2f(lu0, lv1); glVertex2f(side+pos.x,0+pos.y);
+    glTexCoord2f(lu0, lv0); glVertex2f(side+pos.x,side+pos.y);
+    glTexCoord2f(lu1, lv0); glVertex2f(0+pos.x,side+pos.y);
+    break;
+  case SpriteDirection::RIGHT:
+    glTexCoord2f(lu0, lv1); glVertex2f(0+pos.x,0+pos.y);
+    glTexCoord2f(lu1, lv1); glVertex2f(side+pos.x,0+pos.y);
+    glTexCoord2f(lu1, lv0); glVertex2f(side+pos.x,side+pos.y);
+    glTexCoord2f(lu0, lv0); glVertex2f(0+pos.x,side+pos.y);
+    break;
+  case SpriteDirection::UP:
+    glTexCoord2f(lu0, lv0); glVertex2f(0+pos.x,0+pos.y);
+    glTexCoord2f(lu0, lv1); glVertex2f(side+pos.x,0+pos.y);
+    glTexCoord2f(lu1, lv1); glVertex2f(side+pos.x,side+pos.y);
+    glTexCoord2f(lu1, lv0); glVertex2f(0+pos.x,side+pos.y);
+    break;
+  case SpriteDirection::DOWN:
+    glTexCoord2f(lu1, lv0); glVertex2f(0+pos.x,0+pos.y);
+    glTexCoord2f(lu1, lv1); glVertex2f(side+pos.x,0+pos.y);
+    glTexCoord2f(lu0, lv1); glVertex2f(side+pos.x,side+pos.y);
+    glTexCoord2f(lu0, lv0); glVertex2f(0+pos.x,side+pos.y);
+    break;
+  }
+  glEnd();
+  glDisable(GL_TEXTURE_2D);
+
+  return *this;
+}
+
+
 // Paint value in internal quads.
 Sprite& Sprite::paintValue()
 {

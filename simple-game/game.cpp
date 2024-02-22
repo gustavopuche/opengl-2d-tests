@@ -16,21 +16,22 @@ size_t frameCount = 0;
 
 float xr = 40, yr = 40;
 float sprSpeed = 2;
+size_t heroAnimation = 0;
 size_t sprBlckX,sprBlckY,sprOffX,sprOffY;
 
-enum class SpriteDirection {LEFT,RIGHT,UP,DOWN};
-enum class SpriteMove {HORIZONTAL,VERTICAL};
-
+HeroAnimationDirection heroAminDir = HeroAnimationDirection::OPEN;
 SpriteDirection currSprtDir = SpriteDirection::LEFT;
 SpriteDirection nextDir = currSprtDir;
 std::unique_ptr<SerieFactory> upAllBubbles;
 std::unique_ptr<GameScore> scorePanel;
+std::unique_ptr<Sprite> hero;
 const size_t TEXCOL = 2;
 const size_t MAP_SIDE = 27;
 const size_t BLOCK_SIDE = 40;
 const size_t SPRITE_SIDE = 40;
 const size_t BLOCKS_PER_SPRITE = SPRITE_SIDE / BLOCK_SIDE;
 const size_t TEXTURES_PER_LINE = 20;
+const size_t HERO_MAX_ANIMATION = 6;
 
 const size_t FPS = 50;
 
@@ -175,47 +176,55 @@ bool getWallAt(size_t x, size_t y)
 // Paint hero sprite
 void paintSprite()
 {
-  float u0,u1,v0,v1;
-  size_t column = 0;
-  size_t row = 0;
-  size_t maxTextures = TEXTURES_PER_LINE;
-  u0 = 0.0 + column * 1.0 / maxTextures;
-  u1 = u0 + 1.0 / maxTextures;
-  v0 = 0.0 + row * 1.0 / maxTextures;
-  v1 = v0 + 1.0 / maxTextures;
+  // float u0,u1,v0,v1;
+  // size_t column = 0;
+  // size_t row = 0;
+  // size_t maxTextures = TEXTURES_PER_LINE;
+  // u0 = 0.0 + column * 1.0 / maxTextures;
+  // u1 = u0 + 1.0 / maxTextures;
+  // v0 = 0.0 + row * 1.0 / maxTextures;
+  // v1 = v0 + 1.0 / maxTextures;
 
-  glEnable(GL_TEXTURE_2D);
-  glBegin(GL_QUADS);
-  glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
+  // glEnable(GL_TEXTURE_2D);
+  // glBegin(GL_QUADS);
+  // glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
 
-  switch(currSprtDir){
-  case SpriteDirection::LEFT:
-    glTexCoord2f(u1, v1); glVertex2f(0+xr,0+yr);
-    glTexCoord2f(u0, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-    glTexCoord2f(u0, v0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-    glTexCoord2f(u1, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
-    break;
-  case SpriteDirection::RIGHT:
-    glTexCoord2f(u0, v1); glVertex2f(0+xr,0+yr);
-    glTexCoord2f(u1, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-    glTexCoord2f(u1, v0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-    glTexCoord2f(u0, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
-    break;
-  case SpriteDirection::UP:
-    glTexCoord2f(u0, v0); glVertex2f(0+xr,0+yr);
-    glTexCoord2f(u0, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-    glTexCoord2f(u1, v1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-    glTexCoord2f(u1, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
-    break;
-  case SpriteDirection::DOWN:
-    glTexCoord2f(u1, v0); glVertex2f(0+xr,0+yr);
-    glTexCoord2f(u1, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-    glTexCoord2f(u0, v1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-    glTexCoord2f(u0, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
-    break;
-  }
-  glEnd();
-  glDisable(GL_TEXTURE_2D);
+  // switch(currSprtDir){
+  // case SpriteDirection::LEFT:
+  //   glTexCoord2f(u1, v1); glVertex2f(0+xr,0+yr);
+  //   glTexCoord2f(u0, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+  //   glTexCoord2f(u0, v0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+  //   glTexCoord2f(u1, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+  //   break;
+  // case SpriteDirection::RIGHT:
+  //   glTexCoord2f(u0, v1); glVertex2f(0+xr,0+yr);
+  //   glTexCoord2f(u1, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+  //   glTexCoord2f(u1, v0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+  //   glTexCoord2f(u0, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+  //   break;
+  // case SpriteDirection::UP:
+  //   glTexCoord2f(u0, v0); glVertex2f(0+xr,0+yr);
+  //   glTexCoord2f(u0, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+  //   glTexCoord2f(u1, v1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+  //   glTexCoord2f(u1, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+  //   break;
+  // case SpriteDirection::DOWN:
+  //   glTexCoord2f(u1, v0); glVertex2f(0+xr,0+yr);
+  //   glTexCoord2f(u1, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
+  //   glTexCoord2f(u0, v1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
+  //   glTexCoord2f(u0, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
+  //   break;
+  // }
+  // glEnd();
+  // glDisable(GL_TEXTURE_2D);
+
+  hero->paintAnimationFrame();
+}
+
+void createHero()
+{
+  hero = std::make_unique<Sprite>();
+  hero->setTexture(0, 0);
 }
 
 void createScorePanel()
@@ -478,6 +487,33 @@ void display(void)
   glutSwapBuffers();
 
   frameCount++;
+  if (frameCount % (FPS / HERO_MAX_ANIMATION) == 0)
+  {
+    switch (heroAminDir){
+      case HeroAnimationDirection::OPEN:
+        if (heroAnimation == (HERO_MAX_ANIMATION - 1))
+        {
+          heroAminDir = HeroAnimationDirection::CLOSE;
+          heroAnimation--;
+        }
+        else
+        {
+          heroAnimation++;
+        }
+        break;
+     case HeroAnimationDirection::CLOSE:
+       if (heroAnimation == 0)
+       {
+         heroAminDir = HeroAnimationDirection::OPEN;
+         heroAnimation++;
+       }
+       else
+       {
+         heroAnimation--;
+       }
+       break;
+    }
+  }
   finalTime = time(NULL);
   if (finalTime - initialTime > 0)
   {
@@ -504,6 +540,9 @@ int main(int argc, char** argv)
   glutInitWindowSize(1080,1080);
   glutInitWindowPosition(50, 50);
   glutCreateWindow("sIMPle gAMe!");
+
+  // Create hero caracter
+  createHero();
 
   // Create score panel. Only logic behaviour.
   createScorePanel();

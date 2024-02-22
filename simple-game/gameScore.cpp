@@ -6,7 +6,7 @@ void GameScore::paint()
   // Panel line 1.
   for (auto& elem : mPanel[0])
   {
-    elem.setTexture(0,1).paint().paintValue();
+    elem.setTexture(5,0).paint().paintValue();
   }
 
   ////////////////////////////////////////////////////////////

@@ -14,7 +14,10 @@ class Sprite : public TransformImpl
     mMaxTextures{maxTextures},
     mMainColor{ColorRGB(1.0,0.0,0.0)},
     mValueColor1{ColorRGB(1.0,0.0,0.0)},
-    mValueColor2{ColorRGB(1.0,0.0,0.0)}
+    mValueColor2{ColorRGB(1.0,0.0,0.0)},
+    mCurrentAnimation{0},
+    mMaxAnimationFrames{3},
+    mCurrentSpriteDirection{SpriteDirection::LEFT}
   {
     mMainColor   = PredefinedColors::get().randColor();
     mValueColor1 = PredefinedColors::get().randColor();
@@ -23,12 +26,15 @@ class Sprite : public TransformImpl
 
   // Implements fluent builder pattern.
   Sprite& paint();
+  Sprite& paintAnimationFrame();
   Sprite& paintValue();
   Sprite& setColor(float r, float g, float b);
   Sprite& setTexture(int row, int column);
   Position2D getPos();
   void setPos(size_t x, size_t y);
   size_t getValue(){return mValue;};
+  void setAnimation(size_t anim){mCurrentAnimation = anim;};
+  void setMaxAnimation(size_t anim){mMaxAnimationFrames = anim;};
  private:
   size_t side;
   ColorRGB mMainColor;
@@ -39,5 +45,8 @@ class Sprite : public TransformImpl
   size_t mValue;
   size_t mBlockSide;
   size_t mMaxTextures;
+  size_t mCurrentAnimation;
+  size_t mMaxAnimationFrames;
+  SpriteDirection mCurrentSpriteDirection;
 };
 #endif

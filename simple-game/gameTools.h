@@ -6,6 +6,10 @@
 #include <iostream>
 #include <iomanip>
 
+enum class HeroAnimationDirection {OPEN,CLOSE};
+enum class SpriteDirection {LEFT,RIGHT,UP,DOWN};
+enum class SpriteMove {HORIZONTAL,VERTICAL};
+
 struct Position2D
 {
   Position2D(size_t x, size_t y) : x{x}, y{y}

@@ -11,7 +11,7 @@ void SerieFactory::paint()
 {
   for (Sprite elem : mListSerie)
   {
-    elem.setTexture(0,1).paint().paintValue();
+    elem.setTexture(5,0).paint().paintValue();
   }
 }
 
