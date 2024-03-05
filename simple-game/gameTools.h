@@ -6,7 +6,7 @@
 #include <iostream>
 #include <iomanip>
 
-enum class HeroAnimationDirection {OPEN,CLOSE};
+enum class SpriteAnimationDirection {OPEN,CLOSE};
 enum class SpriteDirection {LEFT,RIGHT,UP,DOWN};
 enum class SpriteMove {HORIZONTAL,VERTICAL};
 

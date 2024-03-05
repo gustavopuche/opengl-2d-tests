@@ -23,6 +23,49 @@ Sprite& Sprite::paint()
   return *this;
 }
 
+Sprite &Sprite::setFPS(size_t fps)
+{
+  mFPS = fps;
+
+  return *this;
+}
+
+Sprite& Sprite::setFame(size_t frame)
+{
+  // if (mFrame > frame)
+  // {
+  //   mCurrentAnimation = 0;
+  // }
+  // else
+  // {
+  //   size_t frame2Change = mFPS / mMaxAnimationFrames;
+
+  //   if ( frame % frame2Change == 0)
+  //   {
+  //     mCurrentAnimation++;
+  //   }
+  // }
+  mFrame = frame;
+  calculateAnimation();
+
+  return *this;
+}
+
+Sprite& Sprite::setPixelPos (size_t xpixel,size_t ypixel)
+{
+  mXpixel = xpixel;
+  mYpixel = ypixel;
+
+  return *this;
+}
+
+Sprite& Sprite::setDirection(SpriteDirection direction)
+{
+  mCurrentSpriteDirection = direction;
+
+  return *this;
+}
+
 Sprite& Sprite::paintAnimationFrame()
 {
   float lu0, lu1,lv0,lv1;
@@ -30,39 +73,36 @@ Sprite& Sprite::paintAnimationFrame()
   // Animation Frame texture.
   lu0 = 0.0 + mCurrentAnimation * 1.0 / mMaxTextures;
   lu1 = lu0 + 1.0 / mMaxTextures;
-  lv0 = 0.0 + v0 * 1.0 / mMaxTextures;
+  lv0 = 0.0 + mTexRow * 1.0 / mMaxTextures;
   lv1 = lv0 + 1.0 / mMaxTextures;
-
-
-  Position2D pos = screenPos(x, y, mBlockSide);
 
   glEnable(GL_TEXTURE_2D);
   glBegin(GL_QUADS);
   glColor3f(mMainColor.r,mMainColor.g,mMainColor.b);
   switch(mCurrentSpriteDirection){
   case SpriteDirection::LEFT:
-    glTexCoord2f(lu1, lv1); glVertex2f(0+pos.x,0+pos.y);
-    glTexCoord2f(lu0, lv1); glVertex2f(side+pos.x,0+pos.y);
-    glTexCoord2f(lu0, lv0); glVertex2f(side+pos.x,side+pos.y);
-    glTexCoord2f(lu1, lv0); glVertex2f(0+pos.x,side+pos.y);
+    glTexCoord2f(lu1, lv1); glVertex2f(0+mXpixel,0+mYpixel);
+    glTexCoord2f(lu0, lv1); glVertex2f(side+mXpixel,0+mYpixel);
+    glTexCoord2f(lu0, lv0); glVertex2f(side+mXpixel,side+mYpixel);
+    glTexCoord2f(lu1, lv0); glVertex2f(0+mXpixel,side+mYpixel);
     break;
   case SpriteDirection::RIGHT:
-    glTexCoord2f(lu0, lv1); glVertex2f(0+pos.x,0+pos.y);
-    glTexCoord2f(lu1, lv1); glVertex2f(side+pos.x,0+pos.y);
-    glTexCoord2f(lu1, lv0); glVertex2f(side+pos.x,side+pos.y);
-    glTexCoord2f(lu0, lv0); glVertex2f(0+pos.x,side+pos.y);
+    glTexCoord2f(lu0, lv1); glVertex2f(0+mXpixel,0+mYpixel);
+    glTexCoord2f(lu1, lv1); glVertex2f(side+mXpixel,0+mYpixel);
+    glTexCoord2f(lu1, lv0); glVertex2f(side+mXpixel,side+mYpixel);
+    glTexCoord2f(lu0, lv0); glVertex2f(0+mXpixel,side+mYpixel);
     break;
   case SpriteDirection::UP:
-    glTexCoord2f(lu0, lv0); glVertex2f(0+pos.x,0+pos.y);
-    glTexCoord2f(lu0, lv1); glVertex2f(side+pos.x,0+pos.y);
-    glTexCoord2f(lu1, lv1); glVertex2f(side+pos.x,side+pos.y);
-    glTexCoord2f(lu1, lv0); glVertex2f(0+pos.x,side+pos.y);
+    glTexCoord2f(lu0, lv0); glVertex2f(0+mXpixel,0+mYpixel);
+    glTexCoord2f(lu0, lv1); glVertex2f(side+mXpixel,0+mYpixel);
+    glTexCoord2f(lu1, lv1); glVertex2f(side+mXpixel,side+mYpixel);
+    glTexCoord2f(lu1, lv0); glVertex2f(0+mXpixel,side+mYpixel);
     break;
   case SpriteDirection::DOWN:
-    glTexCoord2f(lu1, lv0); glVertex2f(0+pos.x,0+pos.y);
-    glTexCoord2f(lu1, lv1); glVertex2f(side+pos.x,0+pos.y);
-    glTexCoord2f(lu0, lv1); glVertex2f(side+pos.x,side+pos.y);
-    glTexCoord2f(lu0, lv0); glVertex2f(0+pos.x,side+pos.y);
+    glTexCoord2f(lu1, lv0); glVertex2f(0+mXpixel,0+mYpixel);
+    glTexCoord2f(lu1, lv1); glVertex2f(side+mXpixel,0+mYpixel);
+    glTexCoord2f(lu0, lv1); glVertex2f(side+mXpixel,side+mYpixel);
+    glTexCoord2f(lu0, lv0); glVertex2f(0+mXpixel,side+mYpixel);
     break;
   }
   glEnd();
@@ -71,6 +111,36 @@ Sprite& Sprite::paintAnimationFrame()
   return *this;
 }
 
+void Sprite::calculateAnimation()
+{
+    if (mFrame % (mFPS / mMaxAnimationFrames) == 0)
+  {
+    switch (mSpriteAnimDir){
+      case SpriteAnimationDirection::OPEN:
+        if (mCurrentAnimation == (mMaxAnimationFrames - 1))
+        {
+          mSpriteAnimDir = SpriteAnimationDirection::CLOSE;
+          mCurrentAnimation--;
+        }
+        else
+        {
+          mCurrentAnimation++;
+        }
+        break;
+     case SpriteAnimationDirection::CLOSE:
+       if (mCurrentAnimation == 0)
+       {
+         mSpriteAnimDir = SpriteAnimationDirection::OPEN;
+         mCurrentAnimation++;
+       }
+       else
+       {
+         mCurrentAnimation--;
+       }
+       break;
+    }
+  }
+}
 
 // Paint value in internal quads.
 Sprite& Sprite::paintValue()
@@ -140,6 +210,9 @@ Sprite& Sprite::setColor(float r, float g, float b)
 // Todo calcualte this using an Interface.
 Sprite& Sprite::setTexture (int row,int column)
 {
+  mTexRow = row;
+  mTexColumn = column;
+
   u0 = 0.0 + column * 1.0 / mMaxTextures;
   u1 = u0 + 1.0 / mMaxTextures;
   v0 = 0.0 + row * 1.0 / mMaxTextures;

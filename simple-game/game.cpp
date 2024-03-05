@@ -19,12 +19,12 @@ float sprSpeed = 2;
 size_t heroAnimation = 0;
 size_t sprBlckX,sprBlckY,sprOffX,sprOffY;
 
-HeroAnimationDirection heroAminDir = HeroAnimationDirection::OPEN;
 SpriteDirection currSprtDir = SpriteDirection::LEFT;
 SpriteDirection nextDir = currSprtDir;
 std::unique_ptr<SerieFactory> upAllBubbles;
 std::unique_ptr<GameScore> scorePanel;
 std::unique_ptr<Sprite> hero;
+std::unique_ptr<Sprite> enemy;
 const size_t TEXCOL = 2;
 const size_t MAP_SIDE = 27;
 const size_t BLOCK_SIDE = 40;
@@ -174,7 +174,7 @@ bool getWallAt(size_t x, size_t y)
 }
 
 // Paint hero sprite
-void paintSprite()
+void paintHero()
 {
   // float u0,u1,v0,v1;
   // size_t column = 0;
@@ -218,14 +218,23 @@ void paintSprite()
   // glEnd();
   // glDisable(GL_TEXTURE_2D);
 
-  hero->paintAnimationFrame();
+  hero->setPixelPos(xr, yr).setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
+  enemy->setPixelPos(400, 400).setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
 }
 
 void createHero()
 {
   hero = std::make_unique<Sprite>();
-  hero->setTexture(0, 0);
+  hero->setTexture(0, 0).setFPS(FPS).setColor(1.0,1.0,0.0);
+  hero->setMaxAnimation(6);
 }
+
+void createEnemy()
+{
+  enemy = std::make_unique<Sprite>();
+  enemy->setTexture(4, 0).setFPS(FPS);
+}
+
 
 void createScorePanel()
 {
@@ -481,39 +490,12 @@ void display(void)
   checkNextDirection();
 
   moveSpriteTo(currSprtDir);
-  paintSprite();
+  paintHero();
 
   glFlush();
   glutSwapBuffers();
 
   frameCount++;
-  if (frameCount % (FPS / HERO_MAX_ANIMATION) == 0)
-  {
-    switch (heroAminDir){
-      case HeroAnimationDirection::OPEN:
-        if (heroAnimation == (HERO_MAX_ANIMATION - 1))
-        {
-          heroAminDir = HeroAnimationDirection::CLOSE;
-          heroAnimation--;
-        }
-        else
-        {
-          heroAnimation++;
-        }
-        break;
-     case HeroAnimationDirection::CLOSE:
-       if (heroAnimation == 0)
-       {
-         heroAminDir = HeroAnimationDirection::OPEN;
-         heroAnimation++;
-       }
-       else
-       {
-         heroAnimation--;
-       }
-       break;
-    }
-  }
   finalTime = time(NULL);
   if (finalTime - initialTime > 0)
   {
@@ -543,6 +525,9 @@ int main(int argc, char** argv)
 
   // Create hero caracter
   createHero();
+
+  // Create enemy caracter
+  createEnemy();
 
   // Create score panel. Only logic behaviour.
   createScorePanel();

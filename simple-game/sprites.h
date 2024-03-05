@@ -17,7 +17,10 @@ class Sprite : public TransformImpl
     mValueColor2{ColorRGB(1.0,0.0,0.0)},
     mCurrentAnimation{0},
     mMaxAnimationFrames{3},
-    mCurrentSpriteDirection{SpriteDirection::LEFT}
+    mFPS(60),
+    mFrame(0),
+    mCurrentSpriteDirection{SpriteDirection::LEFT},
+    mSpriteAnimDir{SpriteAnimationDirection::OPEN}
   {
     mMainColor   = PredefinedColors::get().randColor();
     mValueColor1 = PredefinedColors::get().randColor();
@@ -30,6 +33,11 @@ class Sprite : public TransformImpl
   Sprite& paintValue();
   Sprite& setColor(float r, float g, float b);
   Sprite& setTexture(int row, int column);
+  Sprite& setPixelPos(size_t xpixel, size_t ypixel);
+  Sprite& setDirection(SpriteDirection direction);
+  Sprite& setFPS(size_t fps);
+  Sprite& setFame(size_t frame);
+
   Position2D getPos();
   void setPos(size_t x, size_t y);
   size_t getValue(){return mValue;};
@@ -42,11 +50,19 @@ class Sprite : public TransformImpl
   ColorRGB mValueColor2;
   float u0,u1,v0,v1;
   size_t x, y;
+  size_t mXpixel, mYpixel;
   size_t mValue;
   size_t mBlockSide;
+  size_t mTexRow;
+  size_t mTexColumn;
   size_t mMaxTextures;
   size_t mCurrentAnimation;
   size_t mMaxAnimationFrames;
+  size_t mFPS;
+  size_t mFrame;
   SpriteDirection mCurrentSpriteDirection;
+  SpriteAnimationDirection mSpriteAnimDir;
+
+  void calculateAnimation();
 };
 #endif
