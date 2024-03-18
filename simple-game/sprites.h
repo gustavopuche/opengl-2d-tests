@@ -12,7 +12,7 @@ class Sprite : public TransformImpl
     mValue{value},
     mBlockSide{blockSide},
     mMaxTextures{maxTextures},
-    mMainColor{ColorRGB(1.0,0.0,0.0)},
+    mMainColor{ColorRGB(1.0,1.0,1.0)},
     mValueColor1{ColorRGB(1.0,0.0,0.0)},
     mValueColor2{ColorRGB(1.0,0.0,0.0)},
     mCurrentAnimation{0},
@@ -22,7 +22,7 @@ class Sprite : public TransformImpl
     mCurrentSpriteDirection{SpriteDirection::LEFT},
     mSpriteAnimDir{SpriteAnimationDirection::OPEN}
   {
-    mMainColor   = PredefinedColors::get().randColor();
+    // mMainColor   = PredefinedColors::get().randColor();
     mValueColor1 = PredefinedColors::get().randColor();
     mValueColor2 = PredefinedColors::get().randColor();
   }

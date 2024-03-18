@@ -113,7 +113,8 @@ Sprite& Sprite::paintAnimationFrame()
 
 void Sprite::calculateAnimation()
 {
-    if (mFrame % (mFPS / mMaxAnimationFrames) == 0)
+  size_t speedFactor = 3;
+  if (mFrame % ((mFPS / speedFactor) / mMaxAnimationFrames) == 0)
   {
     switch (mSpriteAnimDir){
       case SpriteAnimationDirection::OPEN:

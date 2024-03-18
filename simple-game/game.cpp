@@ -8,6 +8,12 @@
 #include <memory>
 #include <time.h>
 
+////////////////////////////////////////////////////////////////////////////////
+/// Forward declarations
+////////////////////////////////////////////////////////////////////////////////
+bool wallCollision(size_t x, size_t y, SpriteMove moving,SpriteDirection direction);
+
+
 // Global variables to move the object.
 
 size_t initialTime = time(NULL);
@@ -33,7 +39,7 @@ const size_t BLOCKS_PER_SPRITE = SPRITE_SIDE / BLOCK_SIDE;
 const size_t TEXTURES_PER_LINE = 20;
 const size_t HERO_MAX_ANIMATION = 6;
 
-const size_t FPS = 50;
+const size_t FPS = 60;
 
 std::vector<std::vector<size_t>> gameMap = {{
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -173,6 +179,14 @@ bool getWallAt(size_t x, size_t y)
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Move Enemy
+////////////////////////////////////////////////////////////////////////////////
+void moveEnemy()
+{
+  enemy->setPixelPos(400, 400).setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
+}
+
 // Paint hero sprite
 void paintHero()
 {
@@ -219,7 +233,6 @@ void paintHero()
   // glDisable(GL_TEXTURE_2D);
 
   hero->setPixelPos(xr, yr).setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
-  enemy->setPixelPos(400, 400).setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
 }
 
 void createHero()
@@ -232,7 +245,7 @@ void createHero()
 void createEnemy()
 {
   enemy = std::make_unique<Sprite>();
-  enemy->setTexture(4, 0).setFPS(FPS);
+  enemy->setTexture(6, 0).setFPS(FPS);
 }
 
 
@@ -254,40 +267,60 @@ void printSpritePos()
   std::cout << "Offset:< "<< (size_t)xr % BLOCK_SIDE << " " << (size_t)yr % BLOCK_SIDE << "> " << std::endl;
 }
 
-bool wallCollision(size_t x, size_t y, SpriteMove moving)
+bool heroCollision(size_t x, size_t y, SpriteMove moving,SpriteDirection direction)
 {
-  size_t mapValue = upAllBubbles->getElem(x,y);
+  size_t bx, by;
+
+  bx = x;
+  by = y;
+
+  switch(direction)
+  {
+   case SpriteDirection::LEFT:
+     bx = x + 1;
+     break;
+   case SpriteDirection::DOWN:
+     by = y + 1;
+     break;
+  }
+
+  size_t mapValue = upAllBubbles->getElem(bx,by);
   if (mapValue > 1)
   {
     if (mapValue == upAllBubbles->getFrontValue())
     {
       scorePanel->add(upAllBubbles->pop());
       scorePanel->addNext(upAllBubbles->front());
-      upAllBubbles->clearElem(x,y);
+      upAllBubbles->clearElem(bx,by);
     }
-    else
-    {
-      if (moving == SpriteMove::HORIZONTAL)
-      {
-        if(sprOffX == 0)
-        {
-          std::cout << "Detected bubble horizontal colision at (" << x << "," << y << ") with value = " << mapValue << std::endl;
-          std::cout << "Expected bubble value =" << upAllBubbles->getFrontValue() << std::endl;
-          return true;
-        }
-      }
-      else
-      {// Vertical.
-        if(sprOffY == 0)
-        {
-          std::cout << "Detected bubble vertical colision at (" << x << "," << y << ") with value = " << mapValue << std::endl;
-          std::cout << "Expected bubble value =" << upAllBubbles->getFrontValue() << std::endl;
-          return true;
-        }
-      }
-    }
+    // else
+    // {
+    //   if (moving == SpriteMove::HORIZONTAL)
+    //   {
+    //     if(sprOffX == 0)
+    //     {
+    //       std::cout << "Detected bubble horizontal colision at (" << x << "," << y << ") with value = " << mapValue << std::endl;
+    //       std::cout << "Expected bubble value =" << upAllBubbles->getFrontValue() << std::endl;
+    //       return true;
+    //     }
+    //   }
+    //   else
+    //   {// Vertical.
+    //     if(sprOffY == 0)
+    //     {
+    //       std::cout << "Detected bubble vertical colision at (" << x << "," << y << ") with value = " << mapValue << std::endl;
+    //       std::cout << "Expected bubble value =" << upAllBubbles->getFrontValue() << std::endl;
+    //       return true;
+    //     }
+    //   }
+    // }
   }
 
+  return  wallCollision(x, y, moving, direction);
+}
+
+bool wallCollision(size_t x, size_t y, SpriteMove moving,SpriteDirection direction)
+{
   size_t numChecks = BLOCKS_PER_SPRITE;
   if (moving == SpriteMove::HORIZONTAL)
   {
@@ -335,25 +368,25 @@ bool canMoveSpriteTo(SpriteDirection direction)
 
   switch(direction){
   case SpriteDirection::LEFT:
-    if(wallCollision(sprBlckX - 1,sprBlckY,SpriteMove::HORIZONTAL))
+    if(heroCollision(sprBlckX - 1,sprBlckY,SpriteMove::HORIZONTAL,direction))
     {
       return false;
     }
     break;
   case SpriteDirection::RIGHT:
-    if(wallCollision(sprBlckX + BLOCKS_PER_SPRITE,sprBlckY,SpriteMove::HORIZONTAL))
+    if(heroCollision(sprBlckX + BLOCKS_PER_SPRITE,sprBlckY,SpriteMove::HORIZONTAL,direction))
     {
       return false;
     }
     break;
   case SpriteDirection::UP:
-    if(wallCollision(sprBlckX,sprBlckY + BLOCKS_PER_SPRITE,SpriteMove::VERTICAL))
+    if(heroCollision(sprBlckX,sprBlckY + BLOCKS_PER_SPRITE,SpriteMove::VERTICAL,direction))
     {
       return false;
     }
     break;
   case SpriteDirection::DOWN:
-    if(wallCollision(sprBlckX,sprBlckY - 1,SpriteMove::VERTICAL))
+    if(heroCollision(sprBlckX,sprBlckY - 1,SpriteMove::VERTICAL,direction))
     {
       return false;
     }
@@ -491,6 +524,7 @@ void display(void)
 
   moveSpriteTo(currSprtDir);
   paintHero();
+  moveEnemy();
 
   glFlush();
   glutSwapBuffers();
