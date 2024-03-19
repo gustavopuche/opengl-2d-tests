@@ -23,14 +23,16 @@ size_t frameCount = 0;
 float xr = 40, yr = 40;
 float sprSpeed = 2;
 size_t heroAnimation = 0;
-size_t sprBlckX,sprBlckY,sprOffX,sprOffY;
+size_t sprBlckX, sprBlckY, sprOffX, sprOffY;
+size_t enemy1X = 400, enemy1Y = 400;
+SpriteDirection enemy1Dir = SpriteDirection::LEFT;
 
 SpriteDirection currSprtDir = SpriteDirection::LEFT;
 SpriteDirection nextDir = currSprtDir;
 std::unique_ptr<SerieFactory> upAllBubbles;
 std::unique_ptr<GameScore> scorePanel;
 std::unique_ptr<Sprite> hero;
-std::unique_ptr<Sprite> enemy;
+std::unique_ptr<Sprite> enemy1;
 const size_t TEXCOL = 2;
 const size_t MAP_SIDE = 27;
 const size_t BLOCK_SIDE = 40;
@@ -42,64 +44,68 @@ const size_t HERO_MAX_ANIMATION = 6;
 const size_t FPS = 60;
 
 std::vector<std::vector<size_t>> gameMap = {{
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,1,1,1,0,1,1,1,0,1,1,0,1,0,1,1,0,1,1,1,0,1,1,1,0,1},
-  {1,0,1,1,1,0,1,1,1,0,1,1,0,1,0,1,1,0,1,1,1,0,1,1,1,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,1,1,1,0,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,0,1,1,1,0,1},
-  {1,0,1,1,1,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,1,1,1,0,1},
-  {1,0,0,0,0,0,1,1,1,0,1,1,0,1,0,1,1,0,1,1,1,0,0,0,0,0,1},
-  {1,1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,1,1,1},
-  {0,0,0,0,1,0,1,0,1,1,1,1,0,1,0,1,1,1,1,0,1,0,1,0,0,0,0},
-  {1,1,1,1,1,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,1,1},
-  {1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
-  {1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1},
-  {0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0},
-  {1,1,1,1,1,0,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,0,1,1,1,1,1},
-  {1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1},
-  {1,0,1,1,1,0,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,0,1,1,1,0,1},
-  {1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1},
-  {1,1,1,0,1,0,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,0,1,0,1,1,1},
-  {1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1},
-  {1,0,1,1,1,1,1,1,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,1,1,0,1},
-  {1,0,1,1,1,1,1,1,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,1,1,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,1,1,1,0,1,1,1,0,1,1,0,1,0,1,1,0,1,1,1,0,1,1,1,0,1},
+    {1,0,1,1,1,0,1,1,1,0,1,1,0,1,0,1,1,0,1,1,1,0,1,1,1,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,1,1,1,0,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,0,1,1,1,0,1},
+    {1,0,1,1,1,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,1,1,1,0,1},
+    {1,0,0,0,0,0,1,1,1,0,1,1,0,1,0,1,1,0,1,1,1,0,0,0,0,0,1},
+    {1,1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,1,1,1},
+    {0,0,0,0,1,0,1,0,1,1,1,1,0,1,0,1,1,1,1,0,1,0,1,0,0,0,0},
+    {1,1,1,1,1,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,1,1},
+    {1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
+    {1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1},
+    {0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0},
+    {1,1,1,1,1,0,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,0,1,1,1,1,1},
+    {1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1},
+    {1,0,1,1,1,0,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,0,1,1,1,0,1},
+    {1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1},
+    {1,1,1,0,1,0,1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,0,1,0,1,1,1},
+    {1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1},
+    {1,0,1,1,1,1,1,1,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,1,1,0,1},
+    {1,0,1,1,1,1,1,1,1,0,1,1,0,1,0,1,1,0,1,1,1,1,1,1,1,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
   }};
+
+////////////////////////////////////////////////////////////////////////////////
+/// Screen object.
+Screen mScreen{gameMap};
 
 std::vector<unsigned char> img;
 unsigned w, h;
 GLuint texture[0];
 auto serieFunct = [](int x)
-    {
-      int rest = 100 % 6;
-      int max = 100 / 6;
-      if (rest == 0)
-      {
-        max--;
-      }
+{
+  int rest = 100 % 6;
+  int max = 100 / 6;
+  if (rest == 0)
+  {
+    max--;
+  }
 
-      int result;
+  int result;
 
-      // To diff next series.
-      int rounds = x / max;
+  // To diff next series.
+  int rounds = x / max;
 
-      if ((x % max) == 0)
-      {
-        result = max * 6;
-      }
-      else
-      {
-        result = (x % max) * 6;
-      }
+  if ((x % max) == 0)
+  {
+    result = max * 6;
+  }
+  else
+  {
+    result = (x % max) * 6;
+  }
 
-      result += rounds * 100;
-      return result;
-    };
+  result += rounds * 100;
+  return result;
+};
 int serieCurrent = serieFunct(1);
 
 void calculateSpritePos()
@@ -184,7 +190,25 @@ bool getWallAt(size_t x, size_t y)
 ////////////////////////////////////////////////////////////////////////////////
 void moveEnemy()
 {
-  enemy->setPixelPos(400, 400).setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
+  size_t enemy1BlckX = (size_t)enemy1X / BLOCK_SIDE;
+  size_t enemy1BlckY = (size_t)enemy1Y / BLOCK_SIDE;
+  size_t enemy1OffX  = (size_t)enemy1X % BLOCK_SIDE;
+  size_t enemy1OffY  = (size_t)enemy1Y % BLOCK_SIDE;
+
+  std::stack<SpriteDirection> possibleDirs;
+
+  // If offsets are 0 means we are in a new block.
+  // If we are in a new block then.
+  //    Check possible directions
+  //    If new directions random choose one
+  //
+  if (enemy1OffX == 0 && enemy1OffY == 0)
+  {
+    possibleDirs = mScreen.possibleDirections(enemy1X, enemy1Y);
+    // TODO: Choose what direction to forward.
+  }
+
+  enemy1->setPixelPos(400, 400).setDirection(enemy1Dir).setFame(frameCount).paintAnimationFrame();
 }
 
 // Paint hero sprite
@@ -244,8 +268,8 @@ void createHero()
 
 void createEnemy()
 {
-  enemy = std::make_unique<Sprite>();
-  enemy->setTexture(6, 0).setFPS(FPS);
+  enemy1 = std::make_unique<Sprite>();
+  enemy1->setTexture(6, 0).setFPS(FPS);
 }
 
 
@@ -367,30 +391,30 @@ bool canMoveSpriteTo(SpriteDirection direction)
   calculateSpritePos();
 
   switch(direction){
-  case SpriteDirection::LEFT:
-    if(heroCollision(sprBlckX - 1,sprBlckY,SpriteMove::HORIZONTAL,direction))
-    {
-      return false;
-    }
-    break;
-  case SpriteDirection::RIGHT:
-    if(heroCollision(sprBlckX + BLOCKS_PER_SPRITE,sprBlckY,SpriteMove::HORIZONTAL,direction))
-    {
-      return false;
-    }
-    break;
-  case SpriteDirection::UP:
-    if(heroCollision(sprBlckX,sprBlckY + BLOCKS_PER_SPRITE,SpriteMove::VERTICAL,direction))
-    {
-      return false;
-    }
-    break;
-  case SpriteDirection::DOWN:
-    if(heroCollision(sprBlckX,sprBlckY - 1,SpriteMove::VERTICAL,direction))
-    {
-      return false;
-    }
-    break;
+   case SpriteDirection::LEFT:
+     if(heroCollision(sprBlckX - 1,sprBlckY,SpriteMove::HORIZONTAL,direction))
+     {
+       return false;
+     }
+     break;
+   case SpriteDirection::RIGHT:
+     if(heroCollision(sprBlckX + BLOCKS_PER_SPRITE,sprBlckY,SpriteMove::HORIZONTAL,direction))
+     {
+       return false;
+     }
+     break;
+   case SpriteDirection::UP:
+     if(heroCollision(sprBlckX,sprBlckY + BLOCKS_PER_SPRITE,SpriteMove::VERTICAL,direction))
+     {
+       return false;
+     }
+     break;
+   case SpriteDirection::DOWN:
+     if(heroCollision(sprBlckX,sprBlckY - 1,SpriteMove::VERTICAL,direction))
+     {
+       return false;
+     }
+     break;
   }
 
   return true;
@@ -401,34 +425,34 @@ bool moveSpriteTo(SpriteDirection direction)
   bool result = false;
 
   switch(direction){
-  case SpriteDirection::LEFT:
-    if(canMoveSpriteTo(SpriteDirection::LEFT))
-    {
-      xr -= sprSpeed;
-      result = true;
-    }
-    break;
-  case SpriteDirection::RIGHT:
-    if(canMoveSpriteTo(SpriteDirection::RIGHT))
-    {
-      xr += sprSpeed;
-      result = true;
-    }
-    break;
-  case SpriteDirection::UP:
-    if(canMoveSpriteTo(SpriteDirection::UP))
-    {
-      yr += sprSpeed;
-      result = true;
-    }
-    break;
-  case SpriteDirection::DOWN:
-    if(canMoveSpriteTo(SpriteDirection::DOWN))
-    {
-      yr -= sprSpeed;
-      result = true;
-    }
-    break;
+   case SpriteDirection::LEFT:
+     if(canMoveSpriteTo(SpriteDirection::LEFT))
+     {
+       xr -= sprSpeed;
+       result = true;
+     }
+     break;
+   case SpriteDirection::RIGHT:
+     if(canMoveSpriteTo(SpriteDirection::RIGHT))
+     {
+       xr += sprSpeed;
+       result = true;
+     }
+     break;
+   case SpriteDirection::UP:
+     if(canMoveSpriteTo(SpriteDirection::UP))
+     {
+       yr += sprSpeed;
+       result = true;
+     }
+     break;
+   case SpriteDirection::DOWN:
+     if(canMoveSpriteTo(SpriteDirection::DOWN))
+     {
+       yr -= sprSpeed;
+       result = true;
+     }
+     break;
   }
 
   return result;

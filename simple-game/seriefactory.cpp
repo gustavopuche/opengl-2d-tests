@@ -106,8 +106,6 @@ size_t SerieFactory::possibleDirections(size_t x, size_t y)
   posDir.position.x = x;
   posDir.position.y = y;
 
-
-
   while (directions.size() != 0)
   {
     size_t i = (size_t) rand() % directions.size();

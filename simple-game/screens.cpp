@@ -36,6 +36,50 @@ bool Screen::getPos(size_t x, size_t y)
   return mMap[pos.y][pos.x] > 0 ? true : false;
 }
 
+std::stack<SpriteDirection> Screen::possibleDirections(size_t x, size_t y)
+{
+  std::stack<SpriteDirection> possibleDirs;
+
+  size_t rx, ry;
+
+  // Check LEFT.
+  rx = x - mBlockPerSprite;
+  ry = y;
+  if (inLimits(rx,ry))
+  {
+    if (!getPos(rx,ry))
+    {
+      possibleDirs.push(SpriteDirection::LEFT);
+    }
+  }
+  // Check UP.
+  rx = x;
+  ry = y + mBlockPerSprite;
+  if (!getPos(rx,ry))
+  {
+    possibleDirs.push(SpriteDirection::UP);
+  }
+  // Check RIGHT.
+  rx = x + mBlockPerSprite;
+  ry = y;
+  if (!getPos(rx,ry))
+  {
+    possibleDirs.push(SpriteDirection::RIGHT);
+  }
+  // Check DOWN.
+  rx = x;
+  ry = y - mBlockPerSprite;
+  if (inLimits(rx,ry))
+  {
+    if (!getPos(rx,ry))
+    {
+      possibleDirs.push(SpriteDirection::DOWN);
+    }
+  }
+
+  return possibleDirs;
+}
+
 void Screen::setWall(size_t x, size_t y)
 {
   Position2D pos = transformPos(x, y,mMapSide);

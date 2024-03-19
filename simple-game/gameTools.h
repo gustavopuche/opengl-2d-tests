@@ -7,7 +7,7 @@
 #include <iomanip>
 
 enum class SpriteAnimationDirection {OPEN,CLOSE};
-enum class SpriteDirection {LEFT,RIGHT,UP,DOWN};
+enum class SpriteDirection {LEFT,UP,RIGHT,DOWN};
 enum class SpriteMove {HORIZONTAL,VERTICAL};
 
 struct Position2D
