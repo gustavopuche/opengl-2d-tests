@@ -30,6 +30,27 @@ Sprite &Sprite::setFPS(size_t fps)
   return *this;
 }
 
+Sprite &Sprite::advance()
+{
+  switch(mCurrentSpriteDirection){
+  case SpriteDirection::LEFT:
+    mXpixel--;
+    break;
+  case SpriteDirection::RIGHT:
+    mXpixel++;
+    break;
+  case SpriteDirection::UP:
+    mYpixel++;
+    break;
+  case SpriteDirection::DOWN:
+    mYpixel--;
+    break;
+  }
+
+  return *this;
+}
+
+
 Sprite& Sprite::setFame(size_t frame)
 {
   // if (mFrame > frame)
@@ -55,6 +76,14 @@ Sprite& Sprite::setPixelPos (size_t xpixel,size_t ypixel)
 {
   mXpixel = xpixel;
   mYpixel = ypixel;
+
+  return *this;
+}
+
+Sprite& Sprite::getPixelPos(size_t &xpixel, size_t &ypixel)
+{
+  xpixel = mXpixel;
+  ypixel = mYpixel;
 
   return *this;
 }

@@ -37,6 +37,8 @@ class Sprite : public TransformImpl
   Sprite& setDirection(SpriteDirection direction);
   Sprite& setFPS(size_t fps);
   Sprite& setFame(size_t frame);
+  Sprite& advance();
+  Sprite& getPixelPos(size_t& xpixel, size_t& ypixel);
 
   Position2D getPos();
   void setPos(size_t x, size_t y);

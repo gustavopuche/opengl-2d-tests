@@ -7,12 +7,13 @@
 #include <vector>
 #include <memory>
 #include <time.h>
+#include <set>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Forward declarations
 ////////////////////////////////////////////////////////////////////////////////
 bool wallCollision(size_t x, size_t y, SpriteMove moving,SpriteDirection direction);
-
+void setNextDirection(std::stack<SpriteDirection> &possibleDirs, SpriteDirection &spriteDir);
 
 // Global variables to move the object.
 
@@ -185,9 +186,26 @@ bool getWallAt(size_t x, size_t y)
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
+std::string printDir(SpriteDirection dir)
+{
+  switch(dir)
+  {
+   case SpriteDirection::LEFT:
+     return std::string("Left <-");
+   case SpriteDirection::UP:
+     return std::string("Up ^");
+   case SpriteDirection::RIGHT:
+     return std::string("Right ->");
+   case SpriteDirection::DOWN:
+     return std::string("Down \\/");
+  }
+
+  return "None";
+}
+
 /// Move Enemy
-////////////////////////////////////////////////////////////////////////////////
+///
+///
 void moveEnemy()
 {
   size_t enemy1BlckX = (size_t)enemy1X / BLOCK_SIDE;
@@ -204,11 +222,82 @@ void moveEnemy()
   //
   if (enemy1OffX == 0 && enemy1OffY == 0)
   {
-    possibleDirs = mScreen.possibleDirections(enemy1X, enemy1Y);
-    // TODO: Choose what direction to forward.
+    possibleDirs = mScreen.possibleDirections(enemy1BlckX, enemy1BlckY);
+    setNextDirection(possibleDirs, enemy1Dir);
   }
 
-  enemy1->setPixelPos(400, 400).setDirection(enemy1Dir).setFame(frameCount).paintAnimationFrame();
+  // Debug. Remove later
+  std::cout << "Enemy direction: " << printDir(enemy1Dir) << std::endl;
+  //////////////////////////////////////////////////////////////////////
+
+  enemy1->setDirection(enemy1Dir).
+    advance().
+    getPixelPos(enemy1X, enemy1Y).
+    setFame(frameCount).
+    paintAnimationFrame();
+}
+
+/// Choose next sprite direction when in a crossroad.
+///
+/// @param posibleDirs Stack with posible directions to choose
+/// @param spriteDir   Current sprite direction
+void setNextDirection(std::stack<SpriteDirection> &possibleDirs, SpriteDirection &spriteDir)
+{
+  std::vector<SpriteDirection> tangentDirs;
+  SpriteDirection reverse;
+  bool thereIsReverse = false;
+  bool blocked = true; // Indicates that the road is blocked.
+  std::set<SpriteDirection> horizontal = {SpriteDirection::LEFT,SpriteDirection::RIGHT};
+  std::set<SpriteDirection> vertical = {SpriteDirection::UP, SpriteDirection::DOWN};
+
+  std::set<SpriteDirection> tangent, same;
+
+  // Current dir is horizontal.
+  if (horizontal.count(spriteDir) > 0)
+  {
+    tangent = vertical;
+    same = horizontal;
+  }
+  else
+  {
+    tangent = horizontal;
+    same = vertical;
+  }
+
+  while (possibleDirs.size() > 0)
+  {
+    if (tangent.count(possibleDirs.top()) > 0)
+    {
+      tangentDirs.push_back(possibleDirs.top());
+    }
+    else
+    {
+      if (spriteDir == possibleDirs.top())
+      {
+        blocked = false;
+      }
+      else
+      {
+        thereIsReverse = true;
+        reverse = possibleDirs.top();
+      }
+    }
+    possibleDirs.pop();
+  }
+
+  // Choose tangent dir if exists.
+  if (tangentDirs.size() > 0)
+  {
+    size_t i = (size_t) rand() % tangent.size();
+    spriteDir = tangentDirs[i];
+  }
+  // If blocked then reverse
+  else if (blocked)
+  {
+    spriteDir = reverse;
+  }
+  // Otherwise continue in current direction.
+
 }
 
 // Paint hero sprite
@@ -270,8 +359,8 @@ void createEnemy()
 {
   enemy1 = std::make_unique<Sprite>();
   enemy1->setTexture(6, 0).setFPS(FPS);
+  enemy1->setPixelPos(enemy1X, enemy1Y);
 }
-
 
 void createScorePanel()
 {
@@ -557,7 +646,7 @@ void display(void)
   finalTime = time(NULL);
   if (finalTime - initialTime > 0)
   {
-    std::cout << "FPS: " << frameCount << std::endl;
+    // std::cout << "FPS: " << frameCount << std::endl;
     frameCount = 0;
     initialTime = finalTime;
   }
