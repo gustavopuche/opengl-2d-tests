@@ -8,6 +8,7 @@
 #include <memory>
 #include <time.h>
 #include <set>
+#include "enemy.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Forward declarations
@@ -34,6 +35,7 @@ std::unique_ptr<SerieFactory> upAllBubbles;
 std::unique_ptr<GameScore> scorePanel;
 std::unique_ptr<Sprite> hero;
 std::unique_ptr<Sprite> enemy1;
+std::unique_ptr<Enemy> enemy0;
 const size_t TEXCOL = 2;
 const size_t MAP_SIDE = 27;
 const size_t BLOCK_SIDE = 40;
@@ -235,6 +237,8 @@ void moveEnemy()
     getPixelPos(enemy1X, enemy1Y).
     setFame(frameCount).
     paintAnimationFrame();
+
+  enemy0->moveEnemy().paint();
 }
 
 /// Choose next sprite direction when in a crossroad.
@@ -360,6 +364,11 @@ void createEnemy()
   enemy1 = std::make_unique<Sprite>();
   enemy1->setTexture(6, 0).setFPS(FPS);
   enemy1->setPixelPos(enemy1X, enemy1Y);
+
+  enemy0 = std::make_unique<Enemy>();
+  enemy0->setTexture(6, 0).setFPS(FPS);
+  enemy0->setPixelPos(0, 200);
+  enemy0->setBehaviour(0);
 }
 
 void createScorePanel()
