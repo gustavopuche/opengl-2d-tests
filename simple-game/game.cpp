@@ -229,7 +229,7 @@ void moveEnemy()
   }
 
   // Debug. Remove later
-  std::cout << "Enemy direction: " << printDir(enemy1Dir) << std::endl;
+  // std::cout << "Enemy direction: " << printDir(enemy1Dir) << std::endl;
   //////////////////////////////////////////////////////////////////////
 
   enemy1->setDirection(enemy1Dir).
@@ -238,7 +238,7 @@ void moveEnemy()
     setFame(frameCount).
     paintAnimationFrame();
 
-  enemy0->moveEnemy().paint();
+  enemy0->moveEnemy().setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
 }
 
 /// Choose next sprite direction when in a crossroad.
@@ -362,11 +362,11 @@ void createHero()
 void createEnemy()
 {
   enemy1 = std::make_unique<Sprite>();
-  enemy1->setTexture(6, 0).setFPS(FPS);
+  enemy1->setTexture(7, 0).setFPS(FPS);
   enemy1->setPixelPos(enemy1X, enemy1Y);
 
   enemy0 = std::make_unique<Enemy>();
-  enemy0->setTexture(6, 0).setFPS(FPS);
+  enemy0->setTexture(7, 0).setFPS(FPS);
   enemy0->setPixelPos(0, 200);
   enemy0->setBehaviour(0);
 }

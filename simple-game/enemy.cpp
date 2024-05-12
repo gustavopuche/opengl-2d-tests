@@ -4,13 +4,16 @@ void Enemy::setBehaviour(size_t behavior)
 {
   std::function<void()> behaviour0 = [this]()
   {
-    Position2D pos = getPos();
-    if ( pos.x < 40)
+    size_t screenX, screenY;
+    getPixelPos(screenX, screenY);
+    if ( screenX < 200)
     {
-      setPos(pos.x + 1, pos.y);
+      setPixelPos(screenX + 1, screenY);
 
       // Debug. Remove later.
-      std::cout << "Enemy pos x = " << pos.x << std::endl;
+      Position2D pos = getPos();
+      std::cout << "Enemy sceen x = " << screenX
+                << " pos.x = " << pos.x << std::endl;
     }
   };
 
