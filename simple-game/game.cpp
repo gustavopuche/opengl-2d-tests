@@ -354,18 +354,18 @@ void paintHero()
 
 void createHero()
 {
-  hero = std::make_unique<Sprite>();
+  hero = std::make_unique<Sprite>(mScreen);
   hero->setTexture(0, 0).setFPS(FPS).setColor(1.0,1.0,0.0);
   hero->setMaxAnimation(6);
 }
 
 void createEnemy()
 {
-  enemy1 = std::make_unique<Sprite>();
+  enemy1 = std::make_unique<Sprite>(mScreen);
   enemy1->setTexture(7, 0).setFPS(FPS);
   enemy1->setPixelPos(enemy1X, enemy1Y);
 
-  enemy0 = std::make_unique<Enemy>();
+  enemy0 = std::make_unique<Enemy>(mScreen);
   enemy0->setTexture(7, 0).setFPS(FPS);
   enemy0->setPixelPos(0, 200);
   enemy0->setBehaviour(0);

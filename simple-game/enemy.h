@@ -2,12 +2,13 @@
 #define ENEMY_H
 #include "sprites.h"
 #include <functional>
+#include <queue>
 
 class Enemy : public Sprite
 {
  public:
-  Enemy(size_t side = 40, size_t x = 0, size_t y = 0, size_t value = 0, size_t blockSide = 40, size_t maxTextures= 20) :
-    Sprite(side, x, y, value, blockSide, maxTextures)
+  Enemy(Screen &screen, size_t side = 40, size_t x = 0, size_t y = 0, size_t value = 0, size_t blockSide = 40, size_t maxTextures= 20) :
+    Sprite(screen, side, x, y, value, blockSide, maxTextures)
   {
   }
 
@@ -15,6 +16,9 @@ class Enemy : public Sprite
   Enemy& moveEnemy(){run(); return *this;}
  private:
   std::function<void()> run;
+  size_t mBehavior;
+  std::queue<SpriteDirection> mPathQueue;
+
 
 };
 #endif // ENEMY_H

@@ -36,6 +36,10 @@ void Enemy::setBehaviour(size_t behavior)
   {
    case 0:
      run = behaviour0;
+     mPathQueue.push(SpriteDirection::LEFT);
+     mPathQueue.push(SpriteDirection::DOWN);
+     mPathQueue.push(SpriteDirection::RIGHT);
+     mPathQueue.push(SpriteDirection::UP);
      break;
    case 1:
      run = behaviour1;

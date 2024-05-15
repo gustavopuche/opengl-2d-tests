@@ -8,15 +8,15 @@
 
 Sprite& Sprite::paint()
 {
-  Position2D pos = screenPos(x, y, mBlockSide);
+  Position2D pos = screenPos(mX, mY, mBlockSide);
 
   glEnable(GL_TEXTURE_2D);
   glBegin(GL_QUADS);
   glColor3f(mMainColor.r,mMainColor.g,mMainColor.b);
-  glTexCoord2f(u1, v1);  glVertex2f(0+pos.x,0+pos.y);
-  glTexCoord2f(u0, v1);  glVertex2f(side+pos.x,0+pos.y);
-  glTexCoord2f(u0, v0);  glVertex2f(side+pos.x,side+pos.y);
-  glTexCoord2f(u1, v0);  glVertex2f(0+pos.x,side+pos.y);
+  glTexCoord2f(mU1, mV1);  glVertex2f(0+pos.x,0+pos.y);
+  glTexCoord2f(mU0, mV1);  glVertex2f(mSide+pos.x,0+pos.y);
+  glTexCoord2f(mU0, mV0);  glVertex2f(mSide+pos.x,mSide+pos.y);
+  glTexCoord2f(mU1, mV0);  glVertex2f(0+pos.x,mSide+pos.y);
   glEnd();
   glDisable(GL_TEXTURE_2D);
 
@@ -74,8 +74,14 @@ Sprite& Sprite::setFame(size_t frame)
 
 Sprite& Sprite::setPixelPos (size_t xpixel,size_t ypixel)
 {
+  // Screen Coords
   mXpixel = xpixel;
   mYpixel = ypixel;
+  // Map Coords
+  mX = mXpixel / mBlockSide;
+  mY = mYpixel / mBlockSide;
+  mXoffset = mXpixel % mBlockSide;
+  mYoffset = mYpixel % mBlockSide;
 
   return *this;
 }
@@ -111,27 +117,27 @@ Sprite& Sprite::paintAnimationFrame()
   switch(mCurrentSpriteDirection){
   case SpriteDirection::LEFT:
     glTexCoord2f(lu1, lv1); glVertex2f(0+mXpixel,0+mYpixel);
-    glTexCoord2f(lu0, lv1); glVertex2f(side+mXpixel,0+mYpixel);
-    glTexCoord2f(lu0, lv0); glVertex2f(side+mXpixel,side+mYpixel);
-    glTexCoord2f(lu1, lv0); glVertex2f(0+mXpixel,side+mYpixel);
+    glTexCoord2f(lu0, lv1); glVertex2f(mSide+mXpixel,0+mYpixel);
+    glTexCoord2f(lu0, lv0); glVertex2f(mSide+mXpixel,mSide+mYpixel);
+    glTexCoord2f(lu1, lv0); glVertex2f(0+mXpixel,mSide+mYpixel);
     break;
   case SpriteDirection::RIGHT:
     glTexCoord2f(lu0, lv1); glVertex2f(0+mXpixel,0+mYpixel);
-    glTexCoord2f(lu1, lv1); glVertex2f(side+mXpixel,0+mYpixel);
-    glTexCoord2f(lu1, lv0); glVertex2f(side+mXpixel,side+mYpixel);
-    glTexCoord2f(lu0, lv0); glVertex2f(0+mXpixel,side+mYpixel);
+    glTexCoord2f(lu1, lv1); glVertex2f(mSide+mXpixel,0+mYpixel);
+    glTexCoord2f(lu1, lv0); glVertex2f(mSide+mXpixel,mSide+mYpixel);
+    glTexCoord2f(lu0, lv0); glVertex2f(0+mXpixel,mSide+mYpixel);
     break;
   case SpriteDirection::UP:
     glTexCoord2f(lu0, lv0); glVertex2f(0+mXpixel,0+mYpixel);
-    glTexCoord2f(lu0, lv1); glVertex2f(side+mXpixel,0+mYpixel);
-    glTexCoord2f(lu1, lv1); glVertex2f(side+mXpixel,side+mYpixel);
-    glTexCoord2f(lu1, lv0); glVertex2f(0+mXpixel,side+mYpixel);
+    glTexCoord2f(lu0, lv1); glVertex2f(mSide+mXpixel,0+mYpixel);
+    glTexCoord2f(lu1, lv1); glVertex2f(mSide+mXpixel,mSide+mYpixel);
+    glTexCoord2f(lu1, lv0); glVertex2f(0+mXpixel,mSide+mYpixel);
     break;
   case SpriteDirection::DOWN:
     glTexCoord2f(lu1, lv0); glVertex2f(0+mXpixel,0+mYpixel);
-    glTexCoord2f(lu1, lv1); glVertex2f(side+mXpixel,0+mYpixel);
-    glTexCoord2f(lu0, lv1); glVertex2f(side+mXpixel,side+mYpixel);
-    glTexCoord2f(lu0, lv0); glVertex2f(0+mXpixel,side+mYpixel);
+    glTexCoord2f(lu1, lv1); glVertex2f(mSide+mXpixel,0+mYpixel);
+    glTexCoord2f(lu0, lv1); glVertex2f(mSide+mXpixel,mSide+mYpixel);
+    glTexCoord2f(lu0, lv0); glVertex2f(0+mXpixel,mSide+mYpixel);
     break;
   }
   glEnd();
@@ -175,7 +181,7 @@ void Sprite::calculateAnimation()
 // Paint value in internal quads.
 Sprite& Sprite::paintValue()
 {
-  Position2D pos = screenPos(x, y, mBlockSide);
+  Position2D pos = screenPos(mX, mY, mBlockSide);
   size_t x0, x1,y0,y1;
   size_t units, tens;
   units = mValue % 10;
@@ -243,22 +249,22 @@ Sprite& Sprite::setTexture (int row,int column)
   mTexRow = row;
   mTexColumn = column;
 
-  u0 = 0.0 + column * 1.0 / mMaxTextures;
-  u1 = u0 + 1.0 / mMaxTextures;
-  v0 = 0.0 + row * 1.0 / mMaxTextures;
-  v1 = v0 + 1.0 / mMaxTextures;
+  mU0 = 0.0 + column * 1.0 / mMaxTextures;
+  mU1 = mU0 + 1.0 / mMaxTextures;
+  mV0 = 0.0 + row * 1.0 / mMaxTextures;
+  mV1 = mV0 + 1.0 / mMaxTextures;
 
   return *this;
 }
 
 Position2D Sprite::getPos()
 {
-  return Position2D(x,y);
+  return Position2D(mX,mY);
 }
 
 void Sprite::setPos(size_t x, size_t y)
 {
 
-  this->x = x;
-  this->y = y;
+  this->mX = x;
+  this->mY = y;
 }

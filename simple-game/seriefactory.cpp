@@ -201,7 +201,7 @@ void SerieFactory::emptyVisit ()
 void SerieFactory::putSprite(size_t x, size_t y, std::function<int(int)> fSerie)
 {
   int value = fSerie(mCurrent++);
-  mListSerie.push_back(Sprite(mSpriteSide,x,y,value,mBlockSide));
+  mListSerie.push_back(Sprite(mScreen, mSpriteSide,x,y,value,mBlockSide));
 
   // Store value in screen map.
   // Be aware to not use 0 and 1 as part of the serie.

@@ -1,14 +1,16 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 #include "transImpl.h"
+#include "screens.h"
 
 class Sprite : public TransformImpl
 {
  public:
-  Sprite(size_t side = 40, size_t x = 0, size_t y = 0, size_t value = 0, size_t blockSide = 40, size_t maxTextures= 20) :
-    side{side},
-    x{x},
-    y{y},
+  Sprite(Screen &screen, size_t side = 40, size_t x = 0, size_t y = 0, size_t value = 0, size_t blockSide = 40, size_t maxTextures= 20) :
+    mScreen{screen},
+    mSide{side},
+    mX{x},
+    mY{y},
     mValue{value},
     mBlockSide{blockSide},
     mMaxTextures{maxTextures},
@@ -46,24 +48,26 @@ class Sprite : public TransformImpl
   void setAnimation(size_t anim){mCurrentAnimation = anim;};
   void setMaxAnimation(size_t anim){mMaxAnimationFrames = anim;};
  private:
-  size_t side;
-  ColorRGB mMainColor;
-  ColorRGB mValueColor1;
-  ColorRGB mValueColor2;
-  float u0,u1,v0,v1;
-  size_t x, y;
-  size_t mXpixel, mYpixel;
-  size_t mValue;
-  size_t mBlockSide;
-  size_t mTexRow;
-  size_t mTexColumn;
-  size_t mMaxTextures;
-  size_t mCurrentAnimation;
-  size_t mMaxAnimationFrames;
-  size_t mFPS;
-  size_t mFrame;
-  SpriteDirection mCurrentSpriteDirection;
-  SpriteAnimationDirection mSpriteAnimDir;
+  size_t                    mSide;             // Sprite side in pixels
+  Screen                    mScreen;
+  ColorRGB                  mMainColor;
+  ColorRGB                  mValueColor1;
+  ColorRGB                  mValueColor2;
+  float                     mU0,mU1,mV0,mV1;
+  size_t                    mX,mY;
+  size_t                    mXoffset,mYoffset;
+  size_t                    mXpixel,mYpixel;
+  size_t                    mValue;
+  size_t                    mBlockSide;        // Map block side in pixels
+  size_t                    mTexRow;
+  size_t                    mTexColumn;
+  size_t                    mMaxTextures;
+  size_t                    mCurrentAnimation;
+  size_t                    mMaxAnimationFrames;
+  size_t                    mFPS;
+  size_t                    mFrame;
+  SpriteDirection           mCurrentSpriteDirection;
+  SpriteAnimationDirection  mSpriteAnimDir;
 
   void calculateAnimation();
 };
