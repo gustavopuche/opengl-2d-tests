@@ -6,6 +6,18 @@ The aim of this eductional game is to learn mathematical series to the child.
 
 The way to play is like pacman just click a direction and the hero will continue until stop when crashes with a wall or another direction key is touched.
 
+* Enemies behaviours
+
+** Behaviour 1
+<-----^ Rounds screen and if sees hero the pursuit him.
+|     |
+|     |
+v----->
+** Behaviour 2
+
+** Behaviour 3
+** Behaviour 4
+
 * Generate Fluent Holes
 
 This algorithm is used to fill the map with a bubble and a hole alternatelly.

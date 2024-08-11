@@ -367,7 +367,7 @@ void createEnemy()
 
   enemy0 = std::make_unique<Enemy>(mScreen);
   enemy0->setTexture(7, 0).setFPS(FPS);
-  enemy0->setPixelPos(0, 200);
+  enemy0->setPixelPos(1000, 880);
   enemy0->setBehaviour(0);
 }
 

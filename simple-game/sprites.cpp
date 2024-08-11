@@ -262,9 +262,53 @@ Position2D Sprite::getPos()
   return Position2D(mX,mY);
 }
 
+Position2D Sprite::getOffsets()
+{
+  return Position2D(mXoffset, mYoffset);
+}
+
 void Sprite::setPos(size_t x, size_t y)
 {
 
   this->mX = x;
   this->mY = y;
+}
+
+bool Sprite::Collision(SpriteDirection dir)
+{
+  Position2D offsets = getOffsets();
+  if (offsets.x == 0 && offsets.y == 0)
+  { // Enter in a new map block
+    Position2D pos = getPos();
+
+    switch(mCurrentSpriteDirection)
+    {
+     case SpriteDirection::LEFT:
+       if (mScreen.getPos(pos.x - 1, pos.y))
+       {
+         return true;
+       }
+       break;
+     case SpriteDirection::RIGHT:
+       if (mScreen.getPos(pos.x + 1, pos.y))
+       {
+         return true;
+       }
+       break;
+     case SpriteDirection::UP:
+       if (mScreen.getPos(pos.x, pos.y + 1))
+       {
+         return true;
+       }
+       break;
+     case SpriteDirection::DOWN:
+       if (mScreen.getPos(pos.x, pos.y - 1))
+       {
+         return true;
+       }
+       break;
+    }
+  }
+
+  return false;
 }

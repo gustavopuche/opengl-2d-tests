@@ -43,13 +43,17 @@ class Sprite : public TransformImpl
   Sprite& getPixelPos(size_t& xpixel, size_t& ypixel);
 
   Position2D getPos();
+  Position2D getOffsets();
   void setPos(size_t x, size_t y);
   size_t getValue(){return mValue;};
   void setAnimation(size_t anim){mCurrentAnimation = anim;};
   void setMaxAnimation(size_t anim){mMaxAnimationFrames = anim;};
+
+  bool Collision(SpriteDirection dir);
+  Screen                    mScreen;
+
  private:
   size_t                    mSide;             // Sprite side in pixels
-  Screen                    mScreen;
   ColorRGB                  mMainColor;
   ColorRGB                  mValueColor1;
   ColorRGB                  mValueColor2;
