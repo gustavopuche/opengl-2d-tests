@@ -10,6 +10,26 @@ enum class SpriteAnimationDirection {OPEN,CLOSE};
 enum class SpriteDirection {LEFT,UP,RIGHT,DOWN};
 enum class SpriteMove {HORIZONTAL,VERTICAL};
 
+constexpr static int NO_LIMIT = -1;
+
+/// @brief 2D position limit class
+///
+/// NO_LIMIT (-1) means ignore limit
+/// Limit check is in Position2D class
+struct Limit2D
+{
+  Limit2D(int x, int y) : x{x}, y{y}
+  {
+  }
+
+  int x;
+  int y;
+};
+
+/// @brief 2D position class
+///
+/// Chech if the limits are reched with
+/// bool LimitReached(Limit2D limit)
 struct Position2D
 {
   Position2D(size_t x, size_t y) : x{x}, y{y}
@@ -18,6 +38,7 @@ struct Position2D
 
   size_t x;
   size_t y;
+
 };
 
 struct ColorRGB
@@ -69,5 +90,7 @@ void dump(const T& container)
   }
   std::cout << std::endl;
 }
+
+SpriteDirection InverseDir(SpriteDirection dir);
 
 #endif

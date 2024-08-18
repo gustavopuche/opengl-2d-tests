@@ -307,48 +307,6 @@ void setNextDirection(std::stack<SpriteDirection> &possibleDirs, SpriteDirection
 // Paint hero sprite
 void paintHero()
 {
-  // float u0,u1,v0,v1;
-  // size_t column = 0;
-  // size_t row = 0;
-  // size_t maxTextures = TEXTURES_PER_LINE;
-  // u0 = 0.0 + column * 1.0 / maxTextures;
-  // u1 = u0 + 1.0 / maxTextures;
-  // v0 = 0.0 + row * 1.0 / maxTextures;
-  // v1 = v0 + 1.0 / maxTextures;
-
-  // glEnable(GL_TEXTURE_2D);
-  // glBegin(GL_QUADS);
-  // glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
-
-  // switch(currSprtDir){
-  // case SpriteDirection::LEFT:
-  //   glTexCoord2f(u1, v1); glVertex2f(0+xr,0+yr);
-  //   glTexCoord2f(u0, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-  //   glTexCoord2f(u0, v0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-  //   glTexCoord2f(u1, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
-  //   break;
-  // case SpriteDirection::RIGHT:
-  //   glTexCoord2f(u0, v1); glVertex2f(0+xr,0+yr);
-  //   glTexCoord2f(u1, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-  //   glTexCoord2f(u1, v0); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-  //   glTexCoord2f(u0, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
-  //   break;
-  // case SpriteDirection::UP:
-  //   glTexCoord2f(u0, v0); glVertex2f(0+xr,0+yr);
-  //   glTexCoord2f(u0, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-  //   glTexCoord2f(u1, v1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-  //   glTexCoord2f(u1, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
-  //   break;
-  // case SpriteDirection::DOWN:
-  //   glTexCoord2f(u1, v0); glVertex2f(0+xr,0+yr);
-  //   glTexCoord2f(u1, v1); glVertex2f(SPRITE_SIDE+xr,0+yr);
-  //   glTexCoord2f(u0, v1); glVertex2f(SPRITE_SIDE+xr,SPRITE_SIDE+yr);
-  //   glTexCoord2f(u0, v0); glVertex2f(0+xr,SPRITE_SIDE+yr);
-  //   break;
-  // }
-  // glEnd();
-  // glDisable(GL_TEXTURE_2D);
-
   hero->setPixelPos(xr, yr).setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
 }
 

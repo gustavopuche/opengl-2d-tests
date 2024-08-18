@@ -4,6 +4,8 @@
 #include <functional>
 #include <queue>
 
+using PathLimit = std::pair<SpriteDirection, Limit2D>;
+
 class Enemy : public Sprite
 {
  public:
@@ -20,12 +22,13 @@ class Enemy : public Sprite
 
   void   setBehaviour(size_t behavior);
   Enemy& moveEnemy(){run(); return *this;}
-  void   addNewDir(SpriteDirection dir);
+  void   resetPathStack();
+  void   addNewDir(PathLimit path);
+  bool   LimitReached(PathLimit path);
 
  private:
   std::function<void()> run;
   size_t mBehavior;
-  std::stack<SpriteDirection> mPathStack;
-
+  std::stack<PathLimit > mPathStack;
 };
 #endif // ENEMY_H

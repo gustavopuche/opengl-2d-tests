@@ -27,6 +27,7 @@ class Screen : public TransformImpl
   bool getPos(size_t x, size_t y); // True means there is a wall and false there is a hole.
   std::stack<SpriteDirection> possibleDirections(size_t x, size_t y);
   size_t getSide(){return mMap.size();}
+  size_t getBlockSide(){return mBlockSide;}
   size_t getValue(size_t x, size_t y);
   void setValue(size_t x, size_t y, size_t value);
   void dump();

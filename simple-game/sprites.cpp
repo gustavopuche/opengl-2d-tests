@@ -32,24 +32,27 @@ Sprite &Sprite::setFPS(size_t fps)
 
 Sprite &Sprite::advance()
 {
-  switch(mCurrentSpriteDirection){
-  case SpriteDirection::LEFT:
-    mXpixel--;
-    break;
-  case SpriteDirection::RIGHT:
-    mXpixel++;
-    break;
-  case SpriteDirection::UP:
-    mYpixel++;
-    break;
-  case SpriteDirection::DOWN:
-    mYpixel--;
-    break;
+  switch(mCurrentSpriteDirection)
+  {
+   case SpriteDirection::LEFT:
+     mXpixel--;
+     break;
+   case SpriteDirection::RIGHT:
+     mXpixel++;
+     break;
+   case SpriteDirection::UP:
+     mYpixel++;
+     break;
+   case SpriteDirection::DOWN:
+     mYpixel--;
+     break;
   }
+
+  // Recalculate Map Coords and offsets
+  setPixelPos(mXpixel,mYpixel);
 
   return *this;
 }
-
 
 Sprite& Sprite::setFame(size_t frame)
 {
