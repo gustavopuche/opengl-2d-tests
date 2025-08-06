@@ -1,0 +1,5 @@
+* <2025-08-06 Wed>
+** FIXED
+- Enemy1 crashes
+- Bubble 60 not present
+- Empty bubbles crash

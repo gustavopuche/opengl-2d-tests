@@ -51,6 +51,7 @@ class SerieFactory
   int findElem(size_t x, size_t y, size_t offset);
 
   size_t getFrontValue();
+  bool   empty();
   Sprite pop();
   Sprite front();
 

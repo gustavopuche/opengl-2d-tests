@@ -232,11 +232,8 @@ void moveEnemy()
   // std::cout << "Enemy direction: " << printDir(enemy1Dir) << std::endl;
   //////////////////////////////////////////////////////////////////////
 
-  enemy1->setDirection(enemy1Dir).
-    advance().
-    getPixelPos(enemy1X, enemy1Y).
-    setFame(frameCount).
-    paintAnimationFrame();
+  enemy1->setDirection(enemy1Dir).advance().getPixelPos(enemy1X, enemy1Y).
+    setFame(frameCount).paintAnimationFrame();
 
   enemy0->moveEnemy().setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
 }
@@ -292,7 +289,7 @@ void setNextDirection(std::stack<SpriteDirection> &possibleDirs, SpriteDirection
   // Choose tangent dir if exists.
   if (tangentDirs.size() > 0)
   {
-    size_t i = (size_t) rand() % tangent.size();
+    size_t i = (size_t) rand() % tangentDirs.size();
     spriteDir = tangentDirs[i];
   }
   // If blocked then reverse
@@ -370,8 +367,15 @@ bool heroCollision(size_t x, size_t y, SpriteMove moving,SpriteDirection directi
     if (mapValue == upAllBubbles->getFrontValue())
     {
       scorePanel->add(upAllBubbles->pop());
-      scorePanel->addNext(upAllBubbles->front());
       upAllBubbles->clearElem(bx,by);
+      if (upAllBubbles.empty())
+      {// you won!!!
+
+      }
+      else
+      {
+        scorePanel->addNext(upAllBubbles->front());
+      }
     }
     // else
     // {

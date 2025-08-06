@@ -1,8 +1,6 @@
 #include "seriefactory.h"
 #include <GL/glut.h>
-#include <random>
 #include <iterator>
-#include <iostream>
 #include <cstdlib>
 #include <algorithm>
 #include <iterator> // std::distance
@@ -57,7 +55,7 @@ void SerieFactory::generateFluentHoles()
     }while(!mStackDir.empty() && !MoveTo(posDir,x,y));
 
     // Block position.
-    blockMapPosition(x,y);
+    // blockMapPosition(x,y);
 
     // Get possible directions unsorted.
     possibleDirections(x, y);
@@ -222,16 +220,16 @@ void SerieFactory::addElem(size_t x, size_t y) {
 // fullfill a sprite position with "1" (WALL).
 void SerieFactory::blockMapPosition(size_t x, size_t y)
 {
-  for (size_t ix = 0; ix < mBlockPerSprite; ix++)
-  {
-    for (size_t iy = 0; iy < mBlockPerSprite; iy++)
-    {
-      mScreen.setWall(x + ix, y + iy);
+  // for (size_t ix = 0; ix < mBlockPerSprite; ix++)
+  // {
+  //   for (size_t iy = 0; iy < mBlockPerSprite; iy++)
+  //   {
+  mScreen.setWall(x, y);
       // // Debug.
       // std::cout << "x:" << x << " y:" << y << " (ix,iy) = (" << ix << "," << iy << ")" << std::endl;
       // mScreen.dump();
-    }
-  }
+  //   }
+  // }
 }
 
 void SerieFactory::addNeighborgs(size_t x, size_t y)
@@ -286,17 +284,24 @@ int SerieFactory::findElem(size_t x, size_t y, size_t offset)
 
 size_t SerieFactory::getElem(size_t x, size_t y)
 {
+  //  std::cout << "getElem(" << x << "," << y << ")" << std::endl;
   return mScreen.getValue(x,y);
 }
 
 void SerieFactory::clearElem(size_t x, size_t y)
 {
   mScreen.setValue(x,y,0);
+  //  std::cout << "cleared position (" << x << "," << y << ") by 0" << std::endl;
 }
 
 size_t SerieFactory::getFrontValue()
 {
   return mListSerie.front().getValue();
+}
+
+bool SerieFactory::empty()
+{
+  return mListSerie.empty();
 }
 
 Sprite SerieFactory::pop()
