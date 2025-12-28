@@ -91,6 +91,25 @@ void dump(const T& container)
   std::cout << std::endl;
 }
 
+// Dump3 container<container <elemtype>>
+template <typename T>
+void dump3(const T& container)
+{
+  for (const auto& firstElem : container)
+  {
+    for (const auto& secondElem : firstElem)
+    {
+      for (const auto& thirdElem : secondElem)
+      {
+        std::cout << std::right << std::setw(6) << thirdElem;
+      }
+      std::cout << std::endl;
+    }
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+}
+
 SpriteDirection InverseDir(SpriteDirection dir);
 
 #endif

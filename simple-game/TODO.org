@@ -1,5 +1,6 @@
 * TODO [1/2]
 
+- [ ] Load messages from org file
 - [ ] Show operation
 - [X] Paint bubble in panel [2/2]
   - [X] Delete bubble from screen.

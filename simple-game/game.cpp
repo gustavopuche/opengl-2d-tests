@@ -9,6 +9,8 @@
 #include <time.h>
 #include <set>
 #include "enemy.h"
+#include "textTools.h"
+#include <string_view>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Forward declarations
@@ -18,9 +20,15 @@ void setNextDirection(std::stack<SpriteDirection> &possibleDirs, SpriteDirection
 
 // Global variables to move the object.
 
+size_t startTime = time(NULL);
 size_t initialTime = time(NULL);
 size_t finalTime;
 size_t frameCount = 0;
+
+float mMazeU0{};
+float mMazeU1{};
+float mMazeV0{};
+float mMazeV1{};
 
 float xr = 40, yr = 40;
 float sprSpeed = 2;
@@ -36,6 +44,9 @@ std::unique_ptr<GameScore> scorePanel;
 std::unique_ptr<Sprite> hero;
 std::unique_ptr<Sprite> enemy1;
 std::unique_ptr<Enemy> enemy0;
+std::unique_ptr<Enemy> enemy2;
+std::unique_ptr<Enemy> enemy3;
+std::unique_ptr<ScreenMessages> screenMessages;
 const size_t TEXCOL = 2;
 const size_t MAP_SIDE = 27;
 const size_t BLOCK_SIDE = 40;
@@ -43,9 +54,8 @@ const size_t SPRITE_SIDE = 40;
 const size_t BLOCKS_PER_SPRITE = SPRITE_SIDE / BLOCK_SIDE;
 const size_t TEXTURES_PER_LINE = 20;
 const size_t HERO_MAX_ANIMATION = 6;
-
 const size_t FPS = 60;
-
+const std::string_view MESSAGE_FILENAME = "messages.org";
 std::vector<std::vector<size_t>> gameMap = {{
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -119,6 +129,16 @@ void calculateSpritePos()
   sprOffY  = (size_t)yr % BLOCK_SIDE;
 }
 
+// Set maze texture
+void setMazeTexture (int row,int column)
+{
+  mMazeU0 = 0.0 + column * 1.0 / TEXTURES_PER_LINE;
+  mMazeU1 = mMazeU0 + 1.0 / TEXTURES_PER_LINE;
+  mMazeV0 = 0.0 + row * 1.0 / TEXTURES_PER_LINE;
+  mMazeV1 = mMazeV0 + 1.0 / TEXTURES_PER_LINE;
+}
+
+
 void decodeOneStep(const char* filename)
 {
   std::vector<unsigned char> image;
@@ -140,7 +160,9 @@ void decodeOneStep(const char* filename)
   }
 
   // glGenTextures(1,&texture[0]);
-  glTexImage2D(GL_TEXTURE_2D, 0, 4, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, &img[0]);
+  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA); // Enable sprite transparence
+  glEnable(GL_BLEND);                               //
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, &img[0]);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -151,13 +173,19 @@ void decodeOneStep(const char* filename)
 
 void paintBlock(void)
 {
+  glEnable(GL_TEXTURE_2D);
   glBegin(GL_QUADS);
-  glColor3f(1.0 ,0.5 ,0.0);
+  glColor3f(1.0 ,1.0 ,1.0);
+  glTexCoord2f(mMazeU1, mMazeV1);
   glVertex2f(0,0);
+  glTexCoord2f(mMazeU0, mMazeV1);
   glVertex2f(BLOCK_SIDE,0);
+  glTexCoord2f(mMazeU0, mMazeV0);
   glVertex2f(BLOCK_SIDE,BLOCK_SIDE);
+  glTexCoord2f(mMazeU1, mMazeV0);
   glVertex2f(0,BLOCK_SIDE);
   glEnd();
+  glDisable(GL_TEXTURE_2D);
 }
 
 // Paint borders
@@ -236,6 +264,8 @@ void moveEnemy()
     setFame(frameCount).paintAnimationFrame();
 
   enemy0->moveEnemy().setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
+  enemy2->moveEnemy().setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
+  enemy3->moveEnemy().setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
 }
 
 /// Choose next sprite direction when in a crossroad.
@@ -324,11 +354,27 @@ void createEnemy()
   enemy0->setTexture(7, 0).setFPS(FPS);
   enemy0->setPixelPos(1000, 880);
   enemy0->setBehaviour(0);
+
+  enemy2 = std::make_unique<Enemy>(mScreen);
+  enemy2->setTexture(4, 0).setFPS(FPS);
+  enemy2->setPixelPos(1000, 40);
+  enemy2->setBehaviour(0);
+
+  enemy3 = std::make_unique<Enemy>(mScreen);
+  enemy3->setTexture(8, 0).setFPS(FPS);
+  enemy3->setPixelPos(100, 40);
+  enemy3->setBehaviour(0);
+
 }
 
 void createScorePanel()
 {
   scorePanel = std::make_unique<GameScore>(Position2D(1,25),Position2D(25,24));
+}
+
+void createScreenMessages()
+{
+  screenMessages = std::make_unique<ScreenMessages>(MESSAGE_FILENAME);
 }
 
 void createBubbles()
@@ -368,7 +414,7 @@ bool heroCollision(size_t x, size_t y, SpriteMove moving,SpriteDirection directi
     {
       scorePanel->add(upAllBubbles->pop());
       upAllBubbles->clearElem(bx,by);
-      if (upAllBubbles.empty())
+      if (upAllBubbles->empty())
       {// you won!!!
 
       }
@@ -610,14 +656,22 @@ void display(void)
   paintHero();
   moveEnemy();
 
+  frameCount++;
+  finalTime = time(NULL);
+
+  // Wait 10 seconds and blink half a second
+  if (finalTime - startTime < 10 && frameCount < 30)
+  {
+    screenMessages->paint("ready",365,485);
+  }
+
   glFlush();
   glutSwapBuffers();
 
-  frameCount++;
-  finalTime = time(NULL);
   if (finalTime - initialTime > 0)
   {
     // std::cout << "FPS: " << frameCount << std::endl;
+    std::cout << "Final time: " << finalTime << std::endl;
     frameCount = 0;
     initialTime = finalTime;
   }
@@ -641,6 +695,9 @@ int main(int argc, char** argv)
   glutInitWindowPosition(50, 50);
   glutCreateWindow("sIMPle gAMe!");
 
+  // Read Screen Messages
+  screenMessages = std::make_unique<ScreenMessages>("messages.org");
+
   // Create hero caracter
   createHero();
 
@@ -653,7 +710,13 @@ int main(int argc, char** argv)
   // Create bubbles sprites.
   createBubbles();
 
+  // Read screen messages from a file
+  createScreenMessages();
+
   decodeOneStep("pacmat-bubble.png");
+
+  setMazeTexture(5,3);
+
   glutDisplayFunc(display); // display callback function.
 
   glClearColor(0.0f,0.0f,0.0f,0.0f);
