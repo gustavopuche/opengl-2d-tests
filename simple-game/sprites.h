@@ -22,7 +22,8 @@ class Sprite : public TransformImpl
     mFPS(60),
     mFrame(0),
     mCurrentSpriteDirection{SpriteDirection::LEFT},
-    mSpriteAnimDir{SpriteAnimationDirection::OPEN}
+    mSpriteAnimDir{SpriteAnimationDirection::OPEN},
+    mState{SpriteState::ALIVE}
   {
     // mMainColor   = PredefinedColors::get().randColor();
     mValueColor1 = PredefinedColors::get().randColor();
@@ -41,13 +42,17 @@ class Sprite : public TransformImpl
   Sprite& setFame(size_t frame);
   Sprite& advance();
   Sprite& getPixelPos(size_t& xpixel, size_t& ypixel);
+  Sprite& die();
+  Sprite& reset();
 
   Position2D getPos();
   Position2D getOffsets();
   void setPos(size_t x, size_t y);
   size_t getValue(){return mValue;};
-  void setAnimation(size_t anim){mCurrentAnimation = anim;};
+  SpriteState getState(){return mState;}
+  void setAnimation(size_t anim){mCurrentAnimation = anim; mInitAnimation = anim;};
   void setMaxAnimation(size_t anim){mMaxAnimationFrames = anim;};
+  void setDeathAnimation(size_t anim, size_t max){mInitDeathAnimation = anim; mMaxDeathAnimationFrames = max;};
 
   bool Collision(SpriteDirection dir);
   Screen                    mScreen;
@@ -66,12 +71,16 @@ class Sprite : public TransformImpl
   size_t                    mTexRow;
   size_t                    mTexColumn;
   size_t                    mMaxTextures;
+  size_t                    mInitAnimation;
   size_t                    mCurrentAnimation;
+  size_t                    mInitDeathAnimation;
   size_t                    mMaxAnimationFrames;
+  size_t                    mMaxDeathAnimationFrames;
   size_t                    mFPS;
   size_t                    mFrame;
   SpriteDirection           mCurrentSpriteDirection;
   SpriteAnimationDirection  mSpriteAnimDir;
+  SpriteState               mState;
 
   void calculateAnimation();
 };

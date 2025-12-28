@@ -32,7 +32,7 @@ float mMazeV1{};
 
 float xr = 40, yr = 40;
 float sprSpeed = 2;
-size_t heroAnimation = 0;
+size_t mNumLives = 2;
 size_t sprBlckX, sprBlckY, sprOffX, sprOffY;
 size_t enemy1X = 400, enemy1Y = 400;
 SpriteDirection enemy1Dir = SpriteDirection::LEFT;
@@ -263,9 +263,9 @@ void moveEnemy()
   enemy1->setDirection(enemy1Dir).advance().getPixelPos(enemy1X, enemy1Y).
     setFame(frameCount).paintAnimationFrame();
 
-  enemy0->moveEnemy().setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
-  enemy2->moveEnemy().setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
-  enemy3->moveEnemy().setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
+  enemy0->moveEnemy().setFame(frameCount).paintAnimationFrame();
+  enemy2->moveEnemy().setFame(frameCount).paintAnimationFrame();
+  enemy3->moveEnemy().setFame(frameCount).paintAnimationFrame();
 }
 
 /// Choose next sprite direction when in a crossroad.
@@ -331,10 +331,44 @@ void setNextDirection(std::stack<SpriteDirection> &possibleDirs, SpriteDirection
 
 }
 
+bool enemyCollision()
+{
+  bool death = false;
+
+  if (enemy0->getPos() == hero->getPos())
+  {
+    death = true;
+  }
+
+  if (enemy1->getPos() == hero->getPos())
+  {
+    death = true;
+  }
+
+  if (enemy2->getPos() == hero->getPos())
+  {
+    death = true;
+  }
+
+  if (enemy3->getPos() == hero->getPos())
+  {
+    death = true;
+  }
+
+  return death;
+}
+
 // Paint hero sprite
 void paintHero()
 {
-  hero->setPixelPos(xr, yr).setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
+  if (enemyCollision()||hero->getState() == SpriteState::DEATH)
+  {
+    hero->setPixelPos(xr, yr).setFame(frameCount).die().paintAnimationFrame();
+  }
+  else
+  {
+    hero->setPixelPos(xr, yr).setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
+  }
 }
 
 void createHero()
@@ -342,6 +376,7 @@ void createHero()
   hero = std::make_unique<Sprite>(mScreen);
   hero->setTexture(0, 0).setFPS(FPS).setColor(1.0,1.0,0.0);
   hero->setMaxAnimation(6);
+  hero->setDeathAnimation(6,6);
 }
 
 void createEnemy()
@@ -362,14 +397,16 @@ void createEnemy()
 
   enemy3 = std::make_unique<Enemy>(mScreen);
   enemy3->setTexture(8, 0).setFPS(FPS);
-  enemy3->setPixelPos(100, 40);
+  enemy3->setPixelPos(400, 400);
   enemy3->setBehaviour(0);
-
 }
 
 void createScorePanel()
 {
   scorePanel = std::make_unique<GameScore>(Position2D(1,25),Position2D(25,24));
+  Sprite live = Sprite(mScreen);
+  live.setTexture(0, 0).setColor(1.0,1.0,0.0);
+  scorePanel->addLives(live);
 }
 
 void createScreenMessages()
@@ -663,6 +700,11 @@ void display(void)
   if (finalTime - startTime < 10 && frameCount < 30)
   {
     screenMessages->paint("ready",365,485);
+  }
+
+  if (hero->getState() == SpriteState::DEATH && frameCount < 30)
+  {
+    screenMessages->paint("you lose!!",305,485);
   }
 
   glFlush();

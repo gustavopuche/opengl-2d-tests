@@ -9,6 +9,7 @@
 enum class SpriteAnimationDirection {OPEN,CLOSE};
 enum class SpriteDirection {LEFT,UP,RIGHT,DOWN};
 enum class SpriteMove {HORIZONTAL,VERTICAL};
+enum class SpriteState {ALIVE,SUPER,DEATH};
 
 constexpr static int NO_LIMIT = -1;
 
@@ -34,6 +35,16 @@ struct Position2D
 {
   Position2D(size_t x, size_t y) : x{x}, y{y}
   {
+  }
+
+  bool operator==(Position2D const &a)
+  {
+    return a.x == this->x && a.y == this->y;
+  }
+
+  bool operator!=(Position2D const &a)
+  {
+    return a.x != this->x || a.y != this->y;
   }
 
   size_t x;

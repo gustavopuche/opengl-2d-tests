@@ -56,21 +56,11 @@ Sprite &Sprite::advance()
 
 Sprite& Sprite::setFame(size_t frame)
 {
-  // if (mFrame > frame)
-  // {
-  //   mCurrentAnimation = 0;
-  // }
-  // else
-  // {
-  //   size_t frame2Change = mFPS / mMaxAnimationFrames;
-
-  //   if ( frame % frame2Change == 0)
-  //   {
-  //     mCurrentAnimation++;
-  //   }
-  // }
   mFrame = frame;
-  calculateAnimation();
+  if (mState != SpriteState::DEATH)
+  {
+    calculateAnimation();
+  }
 
   return *this;
 }
@@ -179,6 +169,32 @@ void Sprite::calculateAnimation()
        break;
     }
   }
+}
+
+Sprite& Sprite::die()
+{
+  if (mState == SpriteState::ALIVE)
+  {
+    mCurrentAnimation = mInitDeathAnimation;
+    mState = SpriteState::DEATH;
+  }
+  size_t speedFactor = 2;
+  if (mFrame % ((mFPS / speedFactor) / mMaxDeathAnimationFrames) == 0)
+  {
+    if (mCurrentAnimation < (mInitDeathAnimation + mMaxDeathAnimationFrames))
+    {
+      mCurrentAnimation++;
+    }
+  }
+  return *this;
+}
+
+Sprite& Sprite::reset()
+{
+  mCurrentAnimation = mInitAnimation;
+  mState = SpriteState::ALIVE;
+
+  return *this;
 }
 
 // Paint value in internal quads.

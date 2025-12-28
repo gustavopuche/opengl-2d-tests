@@ -9,6 +9,11 @@ void GameScore::paint()
     elem.setTexture(5,0).paint().paintValue();
   }
 
+  // Paint lives
+  for (auto& elem : mLivesPanel)
+  {
+    elem.paint();
+  }
   ////////////////////////////////////////////////////////////
   // Panel line 2.
   size_t numElems = mPanel[1].size();
@@ -29,6 +34,18 @@ void GameScore::paint()
     {
       elem.paint().paintValue();
     }
+  }
+}
+
+void GameScore::addLives(Sprite sprite, size_t lives)
+{
+  size_t x = LAST_POSITION;
+  size_t y = mBegin.y;
+  for (size_t i=0;i<lives;i++)
+  {
+    sprite.setPos(x,y);
+    mLivesPanel.push_back(sprite);
+    x--;
   }
 }
 
