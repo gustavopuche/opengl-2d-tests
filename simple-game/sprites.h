@@ -47,6 +47,7 @@ class Sprite : public TransformImpl
 
   Position2D getPos();
   Position2D getOffsets();
+  SpriteDirection getDirection(){return mCurrentSpriteDirection;}
   void setPos(size_t x, size_t y);
   size_t getValue(){return mValue;};
   SpriteState getState(){return mState;}

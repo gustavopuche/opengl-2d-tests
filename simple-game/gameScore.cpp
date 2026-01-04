@@ -1,22 +1,28 @@
 #include "gameScore.h"
 
-void GameScore::paint()
+GameScore& GameScore::paint()
 {
   ////////////////////////////////////////////////////////////
   // Panel line 1.
-  for (auto& elem : mPanel[0])
+  for (auto& elem : mBubblesPanel[0])
   {
     elem.setTexture(5,0).paint().paintValue();
   }
 
-  // Paint lives
+  // Paint score.
+  for (auto& elem : mScorePanel)
+  {
+    elem.paint();
+  }
+
+  // Paint lives.
   for (auto& elem : mLivesPanel)
   {
     elem.paint();
   }
   ////////////////////////////////////////////////////////////
   // Panel line 2.
-  size_t numElems = mPanel[1].size();
+  size_t numElems = mBubblesPanel[1].size();
   if (numElems > mColumns)
   {
     size_t xcoordOffset = 0;
@@ -24,21 +30,29 @@ void GameScore::paint()
     {
       size_t x = mBegin.x + xcoordOffset++;
       size_t y = mEnd.y;
-      mPanel[1][i].setPos(x, y);
-      mPanel[1][i].paint().paintValue();
+      mBubblesPanel[1][i].setPos(x, y);
+      mBubblesPanel[1][i].paint().paintValue();
     }
   }
   else
   {
-    for (auto& elem : mPanel[1])
+    for (auto& elem : mBubblesPanel[1])
     {
       elem.paint().paintValue();
     }
   }
+
+  return *this;
 }
 
-void GameScore::addLives(Sprite sprite, size_t lives)
+GameScore& GameScore::setLives(size_t lives)
 {
+  // Reset.
+  mLivesPanel.clear();
+
+  Sprite sprite = Sprite(mScreen);
+  sprite.setTexture(0, 0).setColor(1.0,1.0,0.0);
+
   size_t x = LAST_POSITION;
   size_t y = mBegin.y;
   for (size_t i=0;i<lives;i++)
@@ -47,28 +61,51 @@ void GameScore::addLives(Sprite sprite, size_t lives)
     mLivesPanel.push_back(sprite);
     x--;
   }
+
+  return *this;
 }
 
-void GameScore::add(Sprite sprite)
+GameScore& GameScore::add(Sprite sprite)
 {
-  size_t x = mBegin.x + mPanel[1].size();
+  size_t x = mBegin.x + mBubblesPanel[1].size();
   size_t y = mEnd.y;
   sprite.setPos(x,y);
-  mPanel[1].push_back(sprite);
+  mBubblesPanel[1].push_back(sprite);
+
+  return *this;
 }
 
-void GameScore::addNext(Sprite sprite)
+GameScore& GameScore::addNext(Sprite sprite)
 {
   size_t x = mBegin.x;
   size_t y = mBegin.y;
   sprite.setPos(x,y);
 
-  if (mPanel[0].size() == 0)
+  if (mBubblesPanel[0].size() == 0)
   {
-    mPanel[0].push_back(sprite);
+    mBubblesPanel[0].push_back(sprite);
   }
   else
   {
-    mPanel[0][0] = sprite;
+    mBubblesPanel[0][0] = sprite;
   }
+
+  return *this;
+}
+
+GameScore& GameScore::addPoints(size_t points)
+{
+  mScore += points;
+  size_t partialScore = mScore;
+  size_t digitMultiple = SCORE_DIVISOR;
+  size_t digitPos = 0;
+  while (digitMultiple > 1)
+  {
+    size_t textureNumber = partialScore / digitMultiple;
+    partialScore -= textureNumber * digitMultiple;
+    mScorePanel[digitPos++].setTexture(1,textureNumber);
+    digitMultiple /= 10;
+  }
+
+  return *this;
 }

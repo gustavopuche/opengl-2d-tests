@@ -9,7 +9,8 @@
 enum class SpriteAnimationDirection {OPEN,CLOSE};
 enum class SpriteDirection {LEFT,UP,RIGHT,DOWN};
 enum class SpriteMove {HORIZONTAL,VERTICAL};
-enum class SpriteState {ALIVE,SUPER,DEATH};
+enum class SpriteState { ALIVE, SUPER, DEATH };
+enum class GameState {STARTING,RUNNING,LEVEL_CLEAR,DEATH,STOP,GAME_OVER};
 
 constexpr static int NO_LIMIT = -1;
 

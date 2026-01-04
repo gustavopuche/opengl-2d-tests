@@ -22,13 +22,19 @@ class Enemy : public Sprite
 
   void   setBehaviour(size_t behavior);
   Enemy& moveEnemy(){run(); return *this;}
+  Enemy& setHeroData(Sprite hero);
   void   resetPathStack();
   void   addNewDir(PathLimit path);
   bool   LimitReached(PathLimit path);
+  bool   isHeroVisible(Position2D pos);
 
  private:
-  std::function<void()> run;
-  size_t mBehavior;
-  std::stack<PathLimit > mPathStack;
+  std::function<void()>  run;
+  size_t                 mBehavior;
+  std::stack<PathLimit>  mPathStack;
+  Position2D             mHeroPos{0,0};
+  SpriteDirection        mHeroDirection{SpriteDirection::LEFT};
+  SpriteDirection        mChaseDirection{SpriteDirection::LEFT};
+  bool                   mHeroVisible{false};
 };
 #endif // ENEMY_H

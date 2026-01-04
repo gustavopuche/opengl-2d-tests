@@ -13,10 +13,10 @@ Sprite& Sprite::paint()
   glEnable(GL_TEXTURE_2D);
   glBegin(GL_QUADS);
   glColor3f(mMainColor.r,mMainColor.g,mMainColor.b);
-  glTexCoord2f(mU1, mV1);  glVertex2f(0+pos.x,0+pos.y);
-  glTexCoord2f(mU0, mV1);  glVertex2f(mSide+pos.x,0+pos.y);
-  glTexCoord2f(mU0, mV0);  glVertex2f(mSide+pos.x,mSide+pos.y);
-  glTexCoord2f(mU1, mV0);  glVertex2f(0+pos.x,mSide+pos.y);
+  glTexCoord2f(mU0, mV1);  glVertex2f(0+pos.x,0+pos.y);
+  glTexCoord2f(mU1, mV1);  glVertex2f(mSide+pos.x,0+pos.y);
+  glTexCoord2f(mU1, mV0);  glVertex2f(mSide+pos.x,mSide+pos.y);
+  glTexCoord2f(mU0, mV0);  glVertex2f(0+pos.x,mSide+pos.y);
   glEnd();
   glDisable(GL_TEXTURE_2D);
 

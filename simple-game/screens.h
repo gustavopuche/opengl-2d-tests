@@ -31,7 +31,7 @@ class Screen : public TransformImpl
   size_t getValue(size_t x, size_t y);
   void setValue(size_t x, size_t y, size_t value);
   void dump();
-
+  bool isDirectionPossible(Position2D pos, SpriteDirection dir);
  private:
   // Position2D transformPos(size_t x, size_t y);
 

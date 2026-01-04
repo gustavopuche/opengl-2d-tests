@@ -35,21 +35,22 @@ float sprSpeed = 2;
 size_t mNumLives = 2;
 size_t sprBlckX, sprBlckY, sprOffX, sprOffY;
 size_t enemy1X = 400, enemy1Y = 400;
+GameState mGameState{GameState::STARTING};
 SpriteDirection enemy1Dir = SpriteDirection::LEFT;
-
 SpriteDirection currSprtDir = SpriteDirection::LEFT;
 SpriteDirection nextDir = currSprtDir;
 std::unique_ptr<SerieFactory> upAllBubbles;
-std::unique_ptr<GameScore> scorePanel;
-std::unique_ptr<Sprite> hero;
-std::unique_ptr<Sprite> enemy1;
-std::unique_ptr<Enemy> enemy0;
-std::unique_ptr<Enemy> enemy2;
-std::unique_ptr<Enemy> enemy3;
+std::unique_ptr<GameScore> mScorePanel;
+std::unique_ptr<Sprite> mHero;
+std::unique_ptr<Sprite> mEnemy1;
+std::unique_ptr<Enemy> mEnemy0;
+std::unique_ptr<Enemy> mEnemy2;
+std::unique_ptr<Enemy> mEnemy3;
 std::unique_ptr<ScreenMessages> screenMessages;
 const size_t TEXCOL = 2;
 const size_t MAP_SIDE = 27;
 const size_t BLOCK_SIDE = 40;
+const size_t BUBBLE_POINTS = 20;
 const size_t SPRITE_SIDE = 40;
 const size_t BLOCKS_PER_SPRITE = SPRITE_SIDE / BLOCK_SIDE;
 const size_t TEXTURES_PER_LINE = 20;
@@ -95,8 +96,9 @@ unsigned w, h;
 GLuint texture[0];
 auto serieFunct = [](int x)
 {
-  int rest = 100 % 6;
-  int max = 100 / 6;
+  size_t value = 8;
+  int rest = 100 % value;
+  int max = 100 / value;
   if (rest == 0)
   {
     max--;
@@ -109,11 +111,11 @@ auto serieFunct = [](int x)
 
   if ((x % max) == 0)
   {
-    result = max * 6;
+    result = max * value;
   }
   else
   {
-    result = (x % max) * 6;
+    result = (x % max) * value;
   }
 
   result += rounds * 100;
@@ -238,6 +240,11 @@ std::string printDir(SpriteDirection dir)
 ///
 void moveEnemy()
 {
+  if (mGameState == GameState::LEVEL_CLEAR)
+  {
+    return;
+  }
+
   size_t enemy1BlckX = (size_t)enemy1X / BLOCK_SIDE;
   size_t enemy1BlckY = (size_t)enemy1Y / BLOCK_SIDE;
   size_t enemy1OffX  = (size_t)enemy1X % BLOCK_SIDE;
@@ -260,12 +267,12 @@ void moveEnemy()
   // std::cout << "Enemy direction: " << printDir(enemy1Dir) << std::endl;
   //////////////////////////////////////////////////////////////////////
 
-  enemy1->setDirection(enemy1Dir).advance().getPixelPos(enemy1X, enemy1Y).
+  mEnemy1->setDirection(enemy1Dir).advance().getPixelPos(enemy1X, enemy1Y).
     setFame(frameCount).paintAnimationFrame();
 
-  enemy0->moveEnemy().setFame(frameCount).paintAnimationFrame();
-  enemy2->moveEnemy().setFame(frameCount).paintAnimationFrame();
-  enemy3->moveEnemy().setFame(frameCount).paintAnimationFrame();
+  mEnemy0->moveEnemy().setHeroData(*mHero).setFame(frameCount).paintAnimationFrame();
+  mEnemy2->moveEnemy().setHeroData(*mHero).setFame(frameCount).paintAnimationFrame();
+  mEnemy3->moveEnemy().setHeroData(*mHero).setFame(frameCount).paintAnimationFrame();
 }
 
 /// Choose next sprite direction when in a crossroad.
@@ -335,22 +342,22 @@ bool enemyCollision()
 {
   bool death = false;
 
-  if (enemy0->getPos() == hero->getPos())
+  if (mEnemy0->getPos() == mHero->getPos())
   {
     death = true;
   }
 
-  if (enemy1->getPos() == hero->getPos())
+  if (mEnemy1->getPos() == mHero->getPos())
   {
     death = true;
   }
 
-  if (enemy2->getPos() == hero->getPos())
+  if (mEnemy2->getPos() == mHero->getPos())
   {
     death = true;
   }
 
-  if (enemy3->getPos() == hero->getPos())
+  if (mEnemy3->getPos() == mHero->getPos())
   {
     death = true;
   }
@@ -361,52 +368,60 @@ bool enemyCollision()
 // Paint hero sprite
 void paintHero()
 {
-  if (enemyCollision()||hero->getState() == SpriteState::DEATH)
+  if (enemyCollision()||mHero->getState() == SpriteState::DEATH)
   {
-    hero->setPixelPos(xr, yr).setFame(frameCount).die().paintAnimationFrame();
+    mHero->setPixelPos(xr, yr).setFame(frameCount).die().paintAnimationFrame();
+    if (mScorePanel->getLives() == 0)
+    {
+      mGameState = GameState::GAME_OVER;
+    }
+    else
+    {
+      size_t lives = mScorePanel->getLives() - 1;
+      mScorePanel->setLives(lives);
+      mGameState = GameState::DEATH;
+    }
   }
   else
   {
-    hero->setPixelPos(xr, yr).setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
+    mHero->setPixelPos(xr, yr).setDirection(currSprtDir).setFame(frameCount).paintAnimationFrame();
   }
 }
 
 void createHero()
 {
-  hero = std::make_unique<Sprite>(mScreen);
-  hero->setTexture(0, 0).setFPS(FPS).setColor(1.0,1.0,0.0);
-  hero->setMaxAnimation(6);
-  hero->setDeathAnimation(6,6);
+  mHero = std::make_unique<Sprite>(mScreen);
+  mHero->setTexture(0, 0).setFPS(FPS).setColor(1.0,1.0,0.0);
+  mHero->setMaxAnimation(6);
+  mHero->setDeathAnimation(6,6);
 }
 
 void createEnemy()
 {
-  enemy1 = std::make_unique<Sprite>(mScreen);
-  enemy1->setTexture(7, 0).setFPS(FPS);
-  enemy1->setPixelPos(enemy1X, enemy1Y);
+  mEnemy1 = std::make_unique<Sprite>(mScreen);
+  mEnemy1->setTexture(7, 0).setFPS(FPS);
+  mEnemy1->setPixelPos(enemy1X, enemy1Y);
 
-  enemy0 = std::make_unique<Enemy>(mScreen);
-  enemy0->setTexture(7, 0).setFPS(FPS);
-  enemy0->setPixelPos(1000, 880);
-  enemy0->setBehaviour(0);
+  mEnemy0 = std::make_unique<Enemy>(mScreen);
+  mEnemy0->setTexture(7, 0).setFPS(FPS);
+  mEnemy0->setPixelPos(1000, 880);
+  mEnemy0->setBehaviour(0);
 
-  enemy2 = std::make_unique<Enemy>(mScreen);
-  enemy2->setTexture(4, 0).setFPS(FPS);
-  enemy2->setPixelPos(1000, 40);
-  enemy2->setBehaviour(0);
+  mEnemy2 = std::make_unique<Enemy>(mScreen);
+  mEnemy2->setTexture(4, 0).setFPS(FPS);
+  mEnemy2->setPixelPos(1000, 40);
+  mEnemy2->setBehaviour(1);
 
-  enemy3 = std::make_unique<Enemy>(mScreen);
-  enemy3->setTexture(8, 0).setFPS(FPS);
-  enemy3->setPixelPos(400, 400);
-  enemy3->setBehaviour(0);
+  mEnemy3 = std::make_unique<Enemy>(mScreen);
+  mEnemy3->setTexture(8, 0).setFPS(FPS);
+  mEnemy3->setPixelPos(400, 400);
+  mEnemy3->setBehaviour(0);
 }
 
 void createScorePanel()
 {
-  scorePanel = std::make_unique<GameScore>(Position2D(1,25),Position2D(25,24));
-  Sprite live = Sprite(mScreen);
-  live.setTexture(0, 0).setColor(1.0,1.0,0.0);
-  scorePanel->addLives(live);
+  mScorePanel = std::make_unique<GameScore>(mScreen,Position2D(1,25),Position2D(25,24));
+  mScorePanel->setLives();
 }
 
 void createScreenMessages()
@@ -449,38 +464,20 @@ bool heroCollision(size_t x, size_t y, SpriteMove moving,SpriteDirection directi
   {
     if (mapValue == upAllBubbles->getFrontValue())
     {
-      scorePanel->add(upAllBubbles->pop());
+      mScorePanel->add(upAllBubbles->pop()).addPoints(BUBBLE_POINTS);
+      // Debug.
+      std::cout << "mScore: " << mScorePanel->getScore() << std::endl;
+      //////////////////////////////////////////////////////////////////////
       upAllBubbles->clearElem(bx,by);
       if (upAllBubbles->empty())
       {// you won!!!
-
+        mGameState = GameState::LEVEL_CLEAR;
       }
       else
       {
-        scorePanel->addNext(upAllBubbles->front());
+        mScorePanel->addNext(upAllBubbles->front());
       }
     }
-    // else
-    // {
-    //   if (moving == SpriteMove::HORIZONTAL)
-    //   {
-    //     if(sprOffX == 0)
-    //     {
-    //       std::cout << "Detected bubble horizontal colision at (" << x << "," << y << ") with value = " << mapValue << std::endl;
-    //       std::cout << "Expected bubble value =" << upAllBubbles->getFrontValue() << std::endl;
-    //       return true;
-    //     }
-    //   }
-    //   else
-    //   {// Vertical.
-    //     if(sprOffY == 0)
-    //     {
-    //       std::cout << "Detected bubble vertical colision at (" << x << "," << y << ") with value = " << mapValue << std::endl;
-    //       std::cout << "Expected bubble value =" << upAllBubbles->getFrontValue() << std::endl;
-    //       return true;
-    //     }
-    //   }
-    // }
   }
 
   return  wallCollision(x, y, moving, direction);
@@ -566,6 +563,11 @@ bool canMoveSpriteTo(SpriteDirection direction)
 bool moveSpriteTo(SpriteDirection direction)
 {
   bool result = false;
+
+  if (mGameState == GameState::LEVEL_CLEAR || mHero->getState() == SpriteState::DEATH)
+  {
+    return result;
+  }
 
   switch(direction){
    case SpriteDirection::LEFT:
@@ -681,7 +683,7 @@ void display(void)
   paintMap();
 
   // Paint score
-  scorePanel->paint();
+  mScorePanel->paint();
 
   // Paint bubbles generated by the SerieFactory.
   upAllBubbles->paint();
@@ -697,14 +699,23 @@ void display(void)
   finalTime = time(NULL);
 
   // Wait 10 seconds and blink half a second
-  if (finalTime - startTime < 10 && frameCount < 30)
+  if (mGameState == GameState::STARTING && frameCount < 30)
   {
     screenMessages->paint("ready",365,485);
+    if (finalTime - startTime > 10)
+    {
+      mGameState = GameState::RUNNING;
+    }
   }
 
-  if (hero->getState() == SpriteState::DEATH && frameCount < 30)
+  if (mHero->getState() == SpriteState::DEATH && frameCount < 30)
   {
     screenMessages->paint("you lose!!",305,485);
+  }
+
+  if (mGameState == GameState::LEVEL_CLEAR  && frameCount < 30)
+  {
+    screenMessages->paint("you won!!!",305,485);
   }
 
   glFlush();
@@ -713,7 +724,7 @@ void display(void)
   if (finalTime - initialTime > 0)
   {
     // std::cout << "FPS: " << frameCount << std::endl;
-    std::cout << "Final time: " << finalTime << std::endl;
+    // std::cout << "Final time: " << finalTime << std::endl;
     frameCount = 0;
     initialTime = finalTime;
   }

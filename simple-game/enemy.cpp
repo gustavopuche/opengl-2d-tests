@@ -12,13 +12,57 @@ void Enemy::setBehaviour(size_t behavior)
   {
     PathLimit pathLimit = mPathStack.top();
 
-    // Sets sprite direction.
-    setDirection(pathLimit.first);
+    SpriteDirection dir = pathLimit.first;
 
     Position2D offsets = getOffsets();
     if (offsets.x == 0 && offsets.y == 0)
     { // Enter in a new map block
-      if (Collision(pathLimit.first))
+      if (mHeroVisible)
+      {
+        Position2D pos = getPos();
+        if (mScreen.isDirectionPossible(pos,mChaseDirection))
+        {
+          mPathStack.push(std::pair{mChaseDirection, Limit2D{NO_LIMIT, NO_LIMIT}});
+          dir = mChaseDirection;
+        }
+      }
+
+      if (Collision(dir))
+      {
+        // TODO: Remove current dir if limit reached
+        //       Mark new dir when no limit reached as -1,-1
+        //       If limit reached do not calculate posible dirs
+        //       just pop current dir. Check that current dir is in possible dirs.
+        // BUGGY addNewDir is not good. MODIFY it.
+        addNewDir(pathLimit);
+        return;
+      }
+    }
+
+    // Advance sprite
+    advance();
+  };
+
+  std::function<void()> behaviour1 = [this]()
+  {
+    PathLimit pathLimit = mPathStack.top();
+
+    SpriteDirection dir = pathLimit.first;
+
+    Position2D offsets = getOffsets();
+    if (offsets.x == 0 && offsets.y == 0)
+    { // Enter in a new map block
+      if (mHeroVisible)
+      {
+        Position2D pos = getPos();
+        if (mScreen.isDirectionPossible(pos,mChaseDirection))
+        {
+          mPathStack.push(std::pair{mChaseDirection, Limit2D{NO_LIMIT, NO_LIMIT}});
+          dir = mChaseDirection;
+        }
+      }
+
+      if (Collision(dir))
       {
         // TODO: Remove current dir if limit reached
         //       Mark new dir when no limit reached as -1,-1
@@ -31,11 +75,6 @@ void Enemy::setBehaviour(size_t behavior)
 
     // Advance sprite
     advance();
-  };
-
-  std::function<void()> behaviour1 = [this]()
-  {
-
   };
 
   std::function<void()> behaviour2 = [this]()
@@ -56,12 +95,15 @@ void Enemy::setBehaviour(size_t behavior)
      break;
    case 1:
      run = behaviour1;
+     resetPathStack();
      break;
    case 2:
      run = behaviour2;
+     resetPathStack();
      break;
    case 3:
      run = behaviour3;
+     resetPathStack();
      break;
   }
 }
@@ -79,6 +121,10 @@ void Enemy::resetPathStack()
      mPathStack.push(std::pair{SpriteDirection::LEFT,  Limit2D{1, NO_LIMIT}});
      break;
    case 1:
+     mPathStack.push(std::pair{SpriteDirection::LEFT,  Limit2D{1, NO_LIMIT}});
+     mPathStack.push(std::pair{SpriteDirection::DOWN,  Limit2D{NO_LIMIT, 1}});
+     mPathStack.push(std::pair{SpriteDirection::RIGHT, Limit2D{25,NO_LIMIT}});
+     mPathStack.push(std::pair{SpriteDirection::UP,    Limit2D{NO_LIMIT,22}});
      break;
    case 2:
      break;
@@ -140,9 +186,12 @@ void Enemy::addNewDir(PathLimit path)
 {
   std::stack<SpriteDirection> possibleDirs;
 
+  Position2D pos = getPos();
+
   if (LimitReached(path))
   {
     mPathStack.pop();
+
     if (mPathStack.empty())
     {
       resetPathStack();
@@ -150,8 +199,6 @@ void Enemy::addNewDir(PathLimit path)
   }
   else
   {
-    Position2D pos = getPos();
-
     possibleDirs = mScreen.possibleDirections(pos.x, pos.y);
 
     // Push in mPathstack next dir different from current.
@@ -168,4 +215,47 @@ void Enemy::addNewDir(PathLimit path)
       }
     }
   }
+}
+
+Enemy &Enemy::setHeroData(Sprite hero)
+{
+  mHeroVisible = isHeroVisible(hero.getPos());
+  mHeroPos = hero.getPos();
+  mHeroDirection = hero.getDirection();
+  return *this;
+}
+
+
+bool Enemy::isHeroVisible(Position2D heroPos)
+{
+  bool visible = false;
+  Position2D pos = getPos();
+
+  if (heroPos.x == pos.x)
+  {
+    visible = true;
+    if (heroPos.y > pos.y)
+    {
+      mChaseDirection = SpriteDirection::UP;
+    }
+    else
+    {
+      mChaseDirection = SpriteDirection::DOWN;
+    }
+  }
+
+  if (heroPos.y == pos.y)
+  {
+    visible = true;
+    if (heroPos.x > pos.x)
+    {
+      mChaseDirection = SpriteDirection::RIGHT;
+    }
+    else
+    {
+      mChaseDirection = SpriteDirection::LEFT;
+    }
+  }
+
+  return visible;
 }

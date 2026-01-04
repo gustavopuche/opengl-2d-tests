@@ -80,6 +80,25 @@ std::stack<SpriteDirection> Screen::possibleDirections(size_t x, size_t y)
   return possibleDirs;
 }
 
+bool Screen::isDirectionPossible(Position2D pos, SpriteDirection dir)
+{
+  bool possible = false;
+  std::stack<SpriteDirection> possibleDirs = possibleDirections(pos.x, pos.y);
+
+  while (possibleDirs.size() > 0)
+  {
+    if (possibleDirs.top() == dir)
+    {
+      possible = true;
+    }
+
+    possibleDirs.pop();
+  }
+
+  return possible;
+}
+
+
 void Screen::setWall(size_t x, size_t y)
 {
   Position2D pos = transformPos(x, y,mMapSide);
