@@ -8,6 +8,8 @@ void Enemy::setBehaviour(size_t behavior)
 {
   mBehavior = behavior;
 
+  std::cout << __FUNCTION__ <<":"<< __LINE__ << std::endl;
+
   std::function<void()> behaviour0 = [this]()
   {
     PathLimit pathLimit = mPathStack.top();
@@ -24,23 +26,25 @@ void Enemy::setBehaviour(size_t behavior)
         {
           mPathStack.push(std::pair{mChaseDirection, Limit2D{NO_LIMIT, NO_LIMIT}});
           dir = mChaseDirection;
+          std::cout << mName << " dir = mChaseDirection: " << ToString(mChaseDirection)
+                    << " x: " << pos.x << " y: " << pos.y << std::endl;
         }
       }
-
-      if (Collision(dir))
+      else if (Collision(dir))
       {
         // TODO: Remove current dir if limit reached
         //       Mark new dir when no limit reached as -1,-1
         //       If limit reached do not calculate posible dirs
         //       just pop current dir. Check that current dir is in possible dirs.
         // BUGGY addNewDir is not good. MODIFY it.
+        std::cout << mName << " Enemy collision dir: " << ToString(dir) << std::endl;
         addNewDir(pathLimit);
         return;
       }
     }
 
     // Advance sprite
-    advance();
+    advance(dir);
   };
 
   std::function<void()> behaviour1 = [this]()
@@ -74,7 +78,7 @@ void Enemy::setBehaviour(size_t behavior)
     }
 
     // Advance sprite
-    advance();
+    advance(dir);
   };
 
   std::function<void()> behaviour2 = [this]()
@@ -90,20 +94,21 @@ void Enemy::setBehaviour(size_t behavior)
   switch(mBehavior)
   {
    case 0:
-     run = behaviour0;
+     std::cout << __FUNCTION__ <<":"<< __LINE__ << " RESET !!!" << std::endl;
      resetPathStack();
+     run = behaviour0;
      break;
    case 1:
-     run = behaviour1;
      resetPathStack();
+     run = behaviour1;
      break;
    case 2:
-     run = behaviour2;
      resetPathStack();
+     run = behaviour2;
      break;
    case 3:
-     run = behaviour3;
      resetPathStack();
+     run = behaviour3;
      break;
   }
 }
@@ -112,9 +117,16 @@ void Enemy::setBehaviour(size_t behavior)
 ///
 void Enemy::resetPathStack()
 {
+  // Clear stack
+  while(!mPathStack.empty())
+  {
+    mPathStack.pop();
+  }
+
   switch(mBehavior)
   {
    case 0:
+     std::cout << __FUNCTION__ <<":"<< __LINE__ << " RESET path!!!" << std::endl;
      mPathStack.push(std::pair{SpriteDirection::UP,    Limit2D{NO_LIMIT,22}});
      mPathStack.push(std::pair{SpriteDirection::RIGHT, Limit2D{25,NO_LIMIT}});
      mPathStack.push(std::pair{SpriteDirection::DOWN,  Limit2D{NO_LIMIT, 1}});
@@ -194,6 +206,7 @@ void Enemy::addNewDir(PathLimit path)
 
     if (mPathStack.empty())
     {
+      std::cout << mName << " RESET mPathStack!!!" << std::endl;
       resetPathStack();
     }
   }
@@ -206,10 +219,12 @@ void Enemy::addNewDir(PathLimit path)
     {
       if (InverseDir(path.first) == possibleDirs.top())
       {
+        std::cout << mName << " pop dir: " << ToString(path.first) << std::endl;
         possibleDirs.pop();
       }
       else
       {
+        std::cout << mName << " add dir: " << ToString(possibleDirs.top()) << std::endl;
         mPathStack.push(std::pair{possibleDirs.top(), Limit2D{NO_LIMIT, NO_LIMIT}});
         return;
       }
@@ -225,36 +240,16 @@ Enemy &Enemy::setHeroData(Sprite hero)
   return *this;
 }
 
-
 bool Enemy::isHeroVisible(Position2D heroPos)
 {
   bool visible = false;
   Position2D pos = getPos();
 
-  if (heroPos.x == pos.x)
+  std::optional<SpriteDirection> dir = mScreen.positionVisibleDirection(pos,heroPos);
+  if (dir)
   {
     visible = true;
-    if (heroPos.y > pos.y)
-    {
-      mChaseDirection = SpriteDirection::UP;
-    }
-    else
-    {
-      mChaseDirection = SpriteDirection::DOWN;
-    }
-  }
-
-  if (heroPos.y == pos.y)
-  {
-    visible = true;
-    if (heroPos.x > pos.x)
-    {
-      mChaseDirection = SpriteDirection::RIGHT;
-    }
-    else
-    {
-      mChaseDirection = SpriteDirection::LEFT;
-    }
+    mChaseDirection = dir.value();
   }
 
   return visible;

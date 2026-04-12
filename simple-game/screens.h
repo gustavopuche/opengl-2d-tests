@@ -2,6 +2,7 @@
 #define SCREEN_H
 
 #include "transImpl.h"
+#include <optional>
 #include <vector>
 #include <stack>
 
@@ -32,6 +33,7 @@ class Screen : public TransformImpl
   void setValue(size_t x, size_t y, size_t value);
   void dump();
   bool isDirectionPossible(Position2D pos, SpriteDirection dir);
+  std::optional<SpriteDirection> positionVisibleDirection(Position2D origin, Position2D target);
  private:
   // Position2D transformPos(size_t x, size_t y);
 

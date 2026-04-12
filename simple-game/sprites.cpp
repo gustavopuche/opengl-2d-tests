@@ -30,9 +30,9 @@ Sprite &Sprite::setFPS(size_t fps)
   return *this;
 }
 
-Sprite &Sprite::advance()
+Sprite &Sprite::advance(SpriteDirection direction)
 {
-  switch(mCurrentSpriteDirection)
+  switch(direction)
   {
    case SpriteDirection::LEFT:
      mXpixel--;
@@ -300,11 +300,16 @@ bool Sprite::Collision(SpriteDirection dir)
   { // Enter in a new map block
     Position2D pos = getPos();
 
-    switch(mCurrentSpriteDirection)
+    switch(dir)
     {
      case SpriteDirection::LEFT:
        if (mScreen.getPos(pos.x - 1, pos.y))
        {
+         //////////////////////////////////////////////////////////////////////
+         // Debug. Remove later.
+         std::cout << __PRETTY_FUNCTION__ << ":" << __LINE__
+                   << " Colision LEFT x:" << pos.x << " y: " << pos.y << std::endl;
+         //////////////////////////////////////////////////////////////////////
          return true;
        }
        break;
@@ -317,6 +322,11 @@ bool Sprite::Collision(SpriteDirection dir)
      case SpriteDirection::UP:
        if (mScreen.getPos(pos.x, pos.y + 1))
        {
+         //////////////////////////////////////////////////////////////////////
+         // Debug. Remove later.
+         std::cout << __PRETTY_FUNCTION__ << ":" << __LINE__
+                   << " Colision UP x:" << pos.x << " y: " << pos.y << std::endl;
+         //////////////////////////////////////////////////////////////////////
          return true;
        }
        break;

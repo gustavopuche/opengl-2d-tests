@@ -42,8 +42,8 @@ SpriteDirection nextDir = currSprtDir;
 std::unique_ptr<SerieFactory> upAllBubbles;
 std::unique_ptr<GameScore> mScorePanel;
 std::unique_ptr<Sprite> mHero;
-std::unique_ptr<Sprite> mEnemy1;
 std::unique_ptr<Enemy> mEnemy0;
+std::unique_ptr<Enemy> mEnemy1;
 std::unique_ptr<Enemy> mEnemy2;
 std::unique_ptr<Enemy> mEnemy3;
 std::unique_ptr<ScreenMessages> screenMessages;
@@ -267,12 +267,12 @@ void moveEnemy()
   // std::cout << "Enemy direction: " << printDir(enemy1Dir) << std::endl;
   //////////////////////////////////////////////////////////////////////
 
-  mEnemy1->setDirection(enemy1Dir).advance().getPixelPos(enemy1X, enemy1Y).
-    setFame(frameCount).paintAnimationFrame();
+  // mEnemy1->setDirection(enemy1Dir).advance().getPixelPos(enemy1X, enemy1Y).
+  //   setFame(frameCount).paintAnimationFrame();
 
-  mEnemy0->moveEnemy().setHeroData(*mHero).setFame(frameCount).paintAnimationFrame();
-  mEnemy2->moveEnemy().setHeroData(*mHero).setFame(frameCount).paintAnimationFrame();
-  mEnemy3->moveEnemy().setHeroData(*mHero).setFame(frameCount).paintAnimationFrame();
+  mEnemy1->moveEnemy().setHeroData(*mHero).setFame(frameCount).paintAnimationFrame();
+  // mEnemy2->moveEnemy().setHeroData(*mHero).setFame(frameCount).paintAnimationFrame();
+  // mEnemy3->moveEnemy().setHeroData(*mHero).setFame(frameCount).paintAnimationFrame();
 }
 
 /// Choose next sprite direction when in a crossroad.
@@ -342,25 +342,25 @@ bool enemyCollision()
 {
   bool death = false;
 
-  if (mEnemy0->getPos() == mHero->getPos())
-  {
-    death = true;
-  }
+  // if (mEnemy0->getPos() == mHero->getPos())
+  // {
+  //   death = true;
+  // }
 
   if (mEnemy1->getPos() == mHero->getPos())
   {
     death = true;
   }
 
-  if (mEnemy2->getPos() == mHero->getPos())
-  {
-    death = true;
-  }
+  // if (mEnemy2->getPos() == mHero->getPos())
+  // {
+  //   death = true;
+  // }
 
-  if (mEnemy3->getPos() == mHero->getPos())
-  {
-    death = true;
-  }
+  // if (mEnemy3->getPos() == mHero->getPos())
+  // {
+  //   death = true;
+  // }
 
   return death;
 }
@@ -398,24 +398,26 @@ void createHero()
 
 void createEnemy()
 {
-  mEnemy1 = std::make_unique<Sprite>(mScreen);
-  mEnemy1->setTexture(7, 0).setFPS(FPS);
-  mEnemy1->setPixelPos(enemy1X, enemy1Y);
+  // mEnemy0 = std::make_unique<Enemy>("Abella",mScreen);
+  // mEnemy0->setTexture(7, 0).setFPS(FPS);
+  // mEnemy0->setPixelPos(1000, 880);
+  // mEnemy0->setBehaviour(0);
 
-  mEnemy0 = std::make_unique<Enemy>(mScreen);
-  mEnemy0->setTexture(7, 0).setFPS(FPS);
-  mEnemy0->setPixelPos(1000, 880);
-  mEnemy0->setBehaviour(0);
+  mEnemy1 = std::make_unique<Enemy>("RataMay",mScreen);
+  mEnemy1->setTexture(9, 0).setFPS(FPS);
+  mEnemy1->setPixelPos(1000, 40);
+  mEnemy1->setBehaviour(0);
+  mEnemy1->setMaxAnimation(4);
 
-  mEnemy2 = std::make_unique<Enemy>(mScreen);
-  mEnemy2->setTexture(4, 0).setFPS(FPS);
-  mEnemy2->setPixelPos(1000, 40);
-  mEnemy2->setBehaviour(1);
+  // mEnemy2 = std::make_unique<Enemy>("Pipi",mScreen);
+  // mEnemy2->setTexture(4, 0).setFPS(FPS);
+  // mEnemy2->setPixelPos(1000, 40);
+  // mEnemy2->setBehaviour(1);
 
-  mEnemy3 = std::make_unique<Enemy>(mScreen);
-  mEnemy3->setTexture(8, 0).setFPS(FPS);
-  mEnemy3->setPixelPos(400, 400);
-  mEnemy3->setBehaviour(0);
+  // mEnemy3 = std::make_unique<Enemy>("YoRobo",mScreen);
+  // mEnemy3->setTexture(8, 0).setFPS(FPS);
+  // mEnemy3->setPixelPos(400, 400);
+  // mEnemy3->setBehaviour(0);
 }
 
 void createScorePanel()

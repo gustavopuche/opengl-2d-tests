@@ -12,6 +12,18 @@ enum class SpriteMove {HORIZONTAL,VERTICAL};
 enum class SpriteState { ALIVE, SUPER, DEATH };
 enum class GameState {STARTING,RUNNING,LEVEL_CLEAR,DEATH,STOP,GAME_OVER};
 
+inline const char* ToString(SpriteDirection dir)
+{
+    switch (dir)
+    {
+     case SpriteDirection::LEFT:  return "LEFT";
+     case SpriteDirection::RIGHT: return "RIGHT";
+     case SpriteDirection::UP:    return "UP";
+     case SpriteDirection::DOWN:  return "DOWN";
+     default:      return "[Unknown SpriteDirection]";
+    }
+}
+
 constexpr static int NO_LIMIT = -1;
 
 /// @brief 2D position limit class
@@ -46,6 +58,11 @@ struct Position2D
   bool operator!=(Position2D const &a)
   {
     return a.x != this->x || a.y != this->y;
+  }
+
+  std::string debug()
+  {
+    return "("+std::to_string(x)+","+std::to_string(y)+")";
   }
 
   size_t x;

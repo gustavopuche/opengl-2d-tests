@@ -129,6 +129,55 @@ void Screen::setValue(size_t x, size_t y, size_t value)
 //   return Position2D(x,mMapSide - 1 - y);
 // }
 
+std::optional<SpriteDirection> Screen::positionVisibleDirection (Position2D origin,Position2D target)
+{
+  SpriteDirection gazeDirection = SpriteDirection::UP;
+
+  if (origin.x == target.x)
+  {// Look vertically
+    size_t start = origin.y;
+    size_t end   = target.y;
+    if (origin.y > target.y)
+    {
+      start = target.y;
+      end   = origin.y;
+      gazeDirection = SpriteDirection::DOWN;
+    }
+
+    for (size_t j = start; j < end; j++)
+    {
+      if (mMap[mMapSide - 1 - j][origin.x] == 1)
+      {
+        return {};
+      }
+    }
+    return gazeDirection;
+  }
+  else if (origin.y == target.y)
+  {// Look horizontally
+    size_t start = origin.x;
+    size_t end   = target.x;
+    gazeDirection = SpriteDirection::RIGHT;
+    if (origin.x > target.x)
+    {
+      start = target.x;
+      end   = origin.x;
+      gazeDirection = SpriteDirection::LEFT;
+    }
+
+    for (size_t i = start; i < end; i++)
+    {
+      if (mMap[mMapSide - 1 - origin.y][i] == 1)
+      {
+        return {};
+      }
+    }
+    return gazeDirection;
+  }
+
+  return {};
+}
+
 void Screen::dump()
 {
   ::dump(mMap);

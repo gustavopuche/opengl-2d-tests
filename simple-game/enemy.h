@@ -9,13 +9,15 @@ using PathLimit = std::pair<SpriteDirection, Limit2D>;
 class Enemy : public Sprite
 {
  public:
-  Enemy(Screen &screen,
+  Enemy(std::string name,
+        Screen &screen,
         size_t side = 40,
         size_t x = 0,
         size_t y = 0,
         size_t value = 0,
         size_t blockSide = 40,
         size_t maxTextures= 20) :
+    mName(name),
     Sprite(screen, side, x, y, value, blockSide, maxTextures)
   {
   }
@@ -29,6 +31,7 @@ class Enemy : public Sprite
   bool   isHeroVisible(Position2D pos);
 
  private:
+  std::string            mName;
   std::function<void()>  run;
   size_t                 mBehavior;
   std::stack<PathLimit>  mPathStack;
